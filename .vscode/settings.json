@@ -1,0 +1,65 @@
+// MetaEd Recommended Settings
+{
+  // ESlint
+  "eslint.enable": true,
+  "eslint.packageManager": "yarn",
+  "eslint.validate": [
+    { "language": "javascript", "autoFix": true },
+    { "language": "typescript", "autoFix": true }
+  ],
+  "editor.rulers": [80, 125],
+  // TypeScript
+  "typescript.tsdk": "./node_modules/typescript/lib",
+
+  // File Explorer
+  "files.exclude": {
+    "**/.DS_Store": false,
+    "**/.git": true,
+    "**/.hg": false,
+    "**/.svn": false,
+    "**/CVS": false,
+    "**/dist": true,
+  },
+
+  "cSpell.words": [
+    "antlr",
+    "autosave",
+    "changequery",
+    "changeversion",
+    "chmodr",
+    "chmodrp",
+    "copyfiles",
+    "createdbjs",
+    "diminisher",
+    "dismissable",
+    "Dlanguage",
+    "dorny",
+    "dropdbjs",
+    "edfi",
+    "esbuild",
+    "jsinspect",
+    "keymaps",
+    "klaw",
+    "metaed",
+    "MSSQL",
+    "odsapi",
+    "outfile",
+    "packagejson",
+    "pgtools",
+    "preid",
+    "psql",
+    "recordownership",
+    "semverified",
+    "shortstat",
+    "sqlcmd",
+    "sqlserver",
+    "teamcity",
+    "unmock",
+    "vsix",
+    "yarnpkg"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "sarif-viewer.connectToGithubCodeScanning": "off"
+}

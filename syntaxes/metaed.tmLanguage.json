@@ -1,0 +1,47 @@
+{
+  "scopeName": "source.metaed",
+  "name": "MetaEd",
+  "fileTypes": [
+    "metaed",
+    "MetaEd",
+    "METAED"
+  ],
+  "patterns": [
+    {
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": {
+        "0": { "name": "string.metaed" }
+      },
+      "endCaptures": {
+        "0": { "name": "string.metaed" }
+      },
+      "patterns": [
+        {
+          "match": "([^\"]|\"\")*",
+          "name": "string.metaed"
+        }
+      ]
+    },
+    {
+      "match": "//.*",
+      "name": "comment.metaed"
+    },
+    {
+      "match": "\\b(Abstract Entity|Association|Association Extension|Association Subclass|Choice|Shared Decimal|Shared Integer|Shared Short|Shared String|Common Extension|Common|Descriptor|Domain Entity Subclass|Domain Entity Extension|Domain Entity|Domain|Enumeration|Inline Common|Interchange Extension|Interchange)\\b",
+      "name": "support.type.metaed"
+    },
+    {
+      "match": "\\b(association identity|association|allow primary key updates|additions|based on|inherited|bool|choice|common extension|common|currency|date|datetime|decimal places|decimal|deprecated|descriptor|documentation|domain entity identity|domain entity|domain item|duration|element|enumeration|extended documentation|identity template|inherited|inline common|integer|is part of identity|is optional collection|is optional|is queryable field|is queryable only|is required collection|is required|is weak|item|max length|max value|merge|min length|min value|total digits|named|percent|renames identity property|shared decimal|shared integer|shared short|shared string|short|shorten to|string|time|use case documentation|role name|with|year)\\b",
+      "name": "keyword.metaed"
+    },
+    {
+      "match": "\\[([0-9]+|[0-9]+-[0-9]+)\\]",
+      "name": "keyword.control.metaed"
+    },
+    {
+      "match": "\\b[A-Za-z]+\\b",
+      "name": "variable.metaed"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+.vscode/
+src/
+tsconfig.*
+.editorconfig
+.eslint*
+.github
+.prettierrc
+**/*.ts
+**/*.map
