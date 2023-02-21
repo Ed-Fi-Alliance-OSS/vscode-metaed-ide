@@ -56,7 +56,7 @@ export async function findMetaEdProjects(): Promise<WorkspaceProjects> {
       invalidProjects.push({
         folderPath,
         reasonInvalid:
-          'Workspace folder have a package.json file with both metaEdProject.projectName and metaEdProject.projectVersion definitions.',
+          'Workspace folder does not have a package.json file with both metaEdProject.projectName and metaEdProject.projectVersion definitions.',
       });
       continue;
     }
