@@ -1,34 +1,11 @@
 // The Ed-Fi Alliance licenses this file to you under the Ed-Fi License Agreement.
 // See the LICENSE file in the project root for more information.
 
+import path from 'node:path';
 // eslint-disable-next-line import/no-unresolved
-import { Extension, extensions, window } from 'vscode';
-import * as R from 'ramda';
-import path from 'path';
+import { window } from 'vscode';
 
 export const LICENSE_URL = ' https://www.ed-fi.org/getting-started/license-ed-fi-technology/';
-
-/**
- * Finds the directory path for the installed vscode-metaed extension. Used to access the bundled
- * Data Standard models.
- */
-export const installedExtensionPath: () => string = R.memoizeWith(R.identity, () => {
-  // TODO: Change publisher name from prototype's name
-  const metaedExtension: Extension<void> | undefined = extensions.getExtension('edfi-test.metaed');
-  if (metaedExtension == null) {
-    // eslint-disable-next-line no-void
-    void window.showErrorMessage('MetaEd hardcoded extension publisher.name is incorrect');
-    return '';
-  }
-  return metaedExtension.extensionPath;
-});
-
-/**
- * Returns the path to a particular npm package directory.
- */
-export function nodeModulesPath(pathStartingWithPackageDirectory: string): string {
-  return path.resolve(__dirname, '../../node_modules', pathStartingWithPackageDirectory);
-}
 
 /**
  * Awaiting on this function in a microtask ends the microtask queue and allows the next macro task to run.
@@ -40,3 +17,28 @@ export function nodeModulesPath(pathStartingWithPackageDirectory: string): strin
  * gives the UI the opportunity to complete its UI behavior.
  */
 export const yieldToNextMacroTask = async (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
+
+/**
+ * Post an error notification to the UI
+ */
+export async function showErrorNotification(message: string) {
+  // eslint-disable-next-line no-void
+  void window.showErrorMessage(message);
+  await yieldToNextMacroTask();
+}
+
+/**
+ * Post an info notification to the UI
+ */
+export async function showInfoNotification(message: string) {
+  // eslint-disable-next-line no-void
+  void window.showInformationMessage(message);
+  await yieldToNextMacroTask();
+}
+
+/**
+ * Returns the path to a particular npm package directory.
+ */
+export function nodeModulesPath(pathStartingWithPackageDirectory: string): string {
+  return path.resolve(__dirname, '../../node_modules', pathStartingWithPackageDirectory);
+}

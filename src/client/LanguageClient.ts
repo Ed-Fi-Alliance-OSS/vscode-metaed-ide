@@ -17,22 +17,17 @@ import {
   Position,
   Range,
   ConfigurationChangeEvent,
+  WorkspaceFoldersChangeEvent,
 } from 'vscode';
 import path from 'path';
 import debounce from 'p-debounce';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
-import { AboutPanel } from './AboutPanel';
-import {
-  initializeWorkspaceFolders,
-  InitializeWorkspaceFoldersResult,
-  syncDsProjectDirectoryOnTargetDsChange,
-  switchCoreDsProjectOnOdsApiChange,
-  syncWorkspaceOnDsDirectoryOrDsChange,
-} from './ManageConfiguration';
-import { yieldToNextMacroTask } from './Utility';
+import { showErrorNotification, showInfoNotification, yieldToNextMacroTask } from './Utility';
 import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDeleteOnDeploy } from './ExtensionSettings';
-import type { DeployParams } from '../server/DeployParams';
-import { createMetaEdConfiguration } from './MetaEdConfigurationFactory';
+import type { DeployParameters } from '../model/DeployParameters';
+import { createServerMessage } from './ServerMessageFactory';
+import type { ServerMessage } from '../model/ServerMessage';
+import { ensureBundledDsReadOnly } from './DataStandardManager';
 
 let client: LanguageClient;
 const acceptedLicenseDiagnosticCollection: DiagnosticCollection = languages.createDiagnosticCollection('acceptedLicense');
@@ -40,7 +35,15 @@ const acceptedLicenseDiagnosticCollection: DiagnosticCollection = languages.crea
 const sendLintCommandToServer: () => Promise<void> = debounce(async () => {
   // Only lint when agreement is accepted
   if (!acceptedLicense()) return;
-  await client.sendNotification('metaed/lint');
+
+  const serverMessage: ServerMessage | undefined = await createServerMessage(client.outputChannel, {
+    showUiNotifications: false,
+  });
+
+  // Silently do nothing if the is nothing to lint
+  if (serverMessage == null) return;
+
+  await client.sendNotification('metaed/lint', serverMessage);
 }, 500);
 
 /**
@@ -60,18 +63,18 @@ async function addSubscriptions(context: ExtensionContext) {
     commands.registerCommand('metaed.build', () => {
       (async () => {
         if (!acceptedLicense()) {
-          // eslint-disable-next-line no-void
-          void window.showErrorMessage('You must first accept the Ed-Fi License Agreement in Workspace settings.');
-          await yieldToNextMacroTask();
+          await showErrorNotification('You must first accept the Ed-Fi License Agreement in Workspace settings.');
           return;
         }
 
-        const metaEdConfiguration = await createMetaEdConfiguration();
-        await client.sendNotification('metaed/build', metaEdConfiguration);
+        const serverMessage: ServerMessage | undefined = await createServerMessage(client.outputChannel);
+        if (serverMessage == null) {
+          await showErrorNotification('Nothing to build.');
+          return;
+        }
 
-        // eslint-disable-next-line no-void
-        void window.showInformationMessage('Building MetaEd...');
-        await yieldToNextMacroTask();
+        await client.sendNotification('metaed/build', serverMessage);
+        await showInfoNotification('Building MetaEd...');
       })();
     }),
   );
@@ -81,40 +84,36 @@ async function addSubscriptions(context: ExtensionContext) {
     commands.registerCommand('metaed.deploy', () => {
       (async () => {
         if (!acceptedLicense()) {
-          // eslint-disable-next-line no-void
-          void window.showErrorMessage('You must first accept the Ed-Fi License Agreement in Workspace settings.');
-          await yieldToNextMacroTask();
+          await showErrorNotification('You must first accept the Ed-Fi License Agreement in Workspace settings.');
           return;
         }
 
         if (getOdsApiDeploymentDirectory() === '') {
-          // eslint-disable-next-line no-void
-          void window.showInformationMessage('To deploy, set Ods Api Deployment Directory in Workspace settings.');
-          await yieldToNextMacroTask();
+          await showInfoNotification('To deploy, set Ods Api Deployment Directory in Workspace settings.');
           return;
         }
 
-        const metaEdConfiguration = await createMetaEdConfiguration();
-        if (metaEdConfiguration == null) return;
+        const serverMessage: ServerMessage | undefined = await createServerMessage(client.outputChannel);
+        if (serverMessage == null) {
+          await showErrorNotification('Nothing to deploy.');
+          return;
+        }
+
+        const { metaEdConfiguration }: ServerMessage = serverMessage;
 
         // Is there anything to deploy? (In allianceMode, core always gets deployed)
         if (!metaEdConfiguration.allianceMode && metaEdConfiguration.projects.length <= 1) {
-          // eslint-disable-next-line no-void
-          void window.showInformationMessage('No extension to deploy.');
-          await yieldToNextMacroTask();
+          await showErrorNotification('No extension to deploy.');
           return;
         }
 
-        const deployParams: DeployParams = {
-          metaEdConfiguration,
+        const deployParameters: DeployParameters = {
+          serverMessage,
           deployCore: allianceMode(),
           suppressDelete: suppressDeleteOnDeploy(),
         };
-        await client.sendNotification('metaed/deploy', deployParams);
-
-        // eslint-disable-next-line no-void
-        void window.showInformationMessage('Deploying MetaEd...');
-        await yieldToNextMacroTask();
+        await client.sendNotification('metaed/deploy', deployParameters);
+        await showInfoNotification('Deploying MetaEd...');
       })();
     }),
   );
@@ -125,13 +124,6 @@ async function addSubscriptions(context: ExtensionContext) {
       (async () => {
         await sendLintCommandToServer();
       })();
-    }),
-  );
-
-  // Show About panel command from user
-  context.subscriptions.push(
-    commands.registerCommand('metaed.about', () => {
-      AboutPanel.createOrShow(context.extensionPath);
     }),
   );
 
@@ -176,15 +168,11 @@ async function addSubscriptions(context: ExtensionContext) {
     client.onNotification('metaed/buildComplete', (success: boolean) => {
       (async () => {
         if (success) {
-          // eslint-disable-next-line no-void
-          void window.showInformationMessage(
+          await showInfoNotification(
             `MetaEd build success: Find results in 'MetaEdOutput' folder. You may need to refresh the VS Code file explorer.`,
           );
-          await yieldToNextMacroTask();
         } else {
-          // eslint-disable-next-line no-void
-          void window.showInformationMessage('MetaEd build failure - see Problems window');
-          await commands.executeCommand('workbench.action.problems.focus');
+          await showInfoNotification('MetaEd build failure - see Problems window');
         }
       })();
     }),
@@ -195,17 +183,11 @@ async function addSubscriptions(context: ExtensionContext) {
     client.onNotification('metaed/deployComplete', (success: boolean) => {
       (async () => {
         if (success) {
-          // eslint-disable-next-line no-void
-          void window.showInformationMessage(
+          await showInfoNotification(
             `MetaEd deploy success: Find results under '${getOdsApiDeploymentDirectory()}' ODS/API folder.`,
           );
-          await yieldToNextMacroTask();
         } else {
-          // eslint-disable-next-line no-void
-          void window.showInformationMessage(
-            'MetaEd deploy failure - see Problems window and/or check ODS/API path in settings',
-          );
-          await commands.executeCommand('workbench.action.problems.focus');
+          await showInfoNotification('MetaEd deploy failure - see Problems window and/or check ODS/API path in settings');
         }
       })();
     }),
@@ -219,7 +201,7 @@ async function syncAcceptedLicenseDiagnostic() {
   if (acceptedLicense()) {
     acceptedLicenseDiagnosticCollection.clear();
     // Give an initial lint once license accepted
-    await client.sendNotification('metaed/lint');
+    await sendLintCommandToServer();
   } else {
     acceptedLicenseDiagnosticCollection.set(Uri.parse('metaed:Ed-Fi License Needs Accepting', true), [
       new Diagnostic(
@@ -228,6 +210,21 @@ async function syncAcceptedLicenseDiagnostic() {
       ),
     ]);
   }
+}
+
+/**
+ * Subscribe to workspace folder changes, ensuring that if a bundled DS project is added that the files are read-only
+ */
+export async function listenForWorkspaceFolderChange(context: ExtensionContext) {
+  context.subscriptions.push(
+    workspace.onDidChangeWorkspaceFolders(async (event: WorkspaceFoldersChangeEvent) => {
+      await yieldToNextMacroTask();
+      if (event.added.length > 0) {
+        await ensureBundledDsReadOnly();
+        await yieldToNextMacroTask();
+      }
+    }),
+  );
 }
 
 /**
@@ -249,7 +246,7 @@ export async function listenForAcceptedLicenseChange(context: ExtensionContext) 
  * Extension lifecycle function invoked by VS Code to activate extension
  */
 export async function activate(context: ExtensionContext) {
-  const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
+  const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'LanguageServer.js'));
   const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
 
   // If the extension is launched in debug mode then the debug server options are used otherwise the run options are used
@@ -284,18 +281,12 @@ export async function activate(context: ExtensionContext) {
     await sendLintCommandToServer();
   }
 
-  const initializeResult: InitializeWorkspaceFoldersResult = await initializeWorkspaceFolders(client.outputChannel);
-  if (initializeResult.restarting) {
-    client.outputChannel.appendLine('MetaEd will restart');
-    return;
-  }
-
-  switchCoreDsProjectOnOdsApiChange(client.outputChannel);
-  await syncDsProjectDirectoryOnTargetDsChange(context, client.outputChannel);
-  await syncWorkspaceOnDsDirectoryOrDsChange(context, client.outputChannel);
-
   await listenForAcceptedLicenseChange(context);
+  await listenForWorkspaceFolderChange(context);
   await syncAcceptedLicenseDiagnostic();
+  await yieldToNextMacroTask();
+
+  await ensureBundledDsReadOnly();
   await yieldToNextMacroTask();
 
   client.outputChannel.appendLine('MetaEd has started 🎬');

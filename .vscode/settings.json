@@ -7,7 +7,11 @@
     { "language": "javascript", "autoFix": true },
     { "language": "typescript", "autoFix": true }
   ],
-  "editor.rulers": [80, 125],
+  "editor.rulers": [125],
+  "[markdown]": {
+    "editor.rulers": [80]
+  },
+  
   // TypeScript
   "typescript.tsdk": "./node_modules/typescript/lib",
 

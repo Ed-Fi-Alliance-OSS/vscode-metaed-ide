@@ -3,7 +3,7 @@
 	"displayName": "MetaEd IDE",
 	"description": "Ed-Fi MetaEd IDE for Visual Studio Code",
 	"license": "SEE LICENSE IN LICENSE.md",
-	"version": "0.0.2",
+	"version": "0.0.1",
 	"publishConfig": {
 		"registry": "https://www.myget.org/F/ed-fi/npm/"
 	},
@@ -34,17 +34,12 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./dist/client/index.js",
+	"main": "./dist/client/LanguageClient.js",
 	"contributes": {
 		"commands": [
 			{
 				"command": "metaed.build",
 				"title": "Build",
-				"category": "MetaEd"
-			},
-			{
-				"command": "metaed.about",
-				"title": "About",
 				"category": "MetaEd"
 			},
 			{
@@ -80,10 +75,6 @@
 					"group": "navigation"
 				},
 				{
-					"command": "metaed.about",
-					"group": "navigation"
-				},
-				{
 					"command": "metaed.deploy",
 					"group": "navigation"
 				}
@@ -96,9 +87,8 @@
 					"order": 1,
 					"description": "The target Ed-Fi ODS/API version",
 					"type": "string",
-					"default": "",
+					"default": "6.1.0",
 					"enum": [
-						"",
 						"3.0.0",
 						"3.1.0",
 						"3.1.1",
@@ -113,17 +103,17 @@
 						"6.1.0"
 					]
 				},
-				"metaed.targetDataStandardVersion": {
-					"order": 2,
-					"description": "The target Ed-Fi Data Standard version",
-					"type": "string",
-					"default": ""
-				},
 				"metaed.odsApiDeploymentDirectory": {
-					"order": 3,
+					"order": 2,
 					"description": "Full path to root folder for the Ed-Fi ODS / API source code.  The folder this points to should contain Ed-Fi-ODS and Ed-Fi-ODS-Implementation folders.",
 					"type": "string",
 					"default": ""
+				},
+				"metaed.acceptedLicense": {
+					"order": 3,
+					"markdownDescription": "Usage of the MetaEd IDE requires acceptance of the [Ed-Fi License Agreement](https://www.ed-fi.org/getting-started/license-ed-fi-technology). Check the box to accept the license terms.",
+					"type": "boolean",
+					"default": false
 				},
 				"metaed.suppressDeleteOnDeploy": {
 					"order": 4,
@@ -147,20 +137,9 @@
 						"I do not consent."
 					]
 				},
-				"metaed.dataStandardProjectDirectory": {
-					"order": 6,
-					"description": "Full path to the set of core MetaEd files for the Ed-Fi Data Standard.",
-					"type": "string",
-					"default": ""
-				},
-				"metaed.acceptedLicense": {
-					"order": 7,
-					"markdownDescription": "Usage of the MetaEd IDE requires acceptance of the Ed-Fi License Agreement. Click [here](https://www.ed-fi.org/getting-started/license-ed-fi-technology) for license information. Check the box to accept the license terms.",
-					"type": "boolean",
-					"default": false
-				},
+
 				"metaed.allianceMode": {
-					"order": 8,
+					"order": 6,
 					"description": "For Alliance users only, this makes core files editable. Non-Alliance users must leave this setting disabled to avoid dangerous and costly mistakes.",
 					"type": "boolean",
 					"default": false
