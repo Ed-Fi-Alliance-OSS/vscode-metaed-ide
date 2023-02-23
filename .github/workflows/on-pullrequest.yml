@@ -10,6 +10,7 @@ on:
     paths:
       - "src/**"
       - ".github/**"
+      - "package-lock.json"
   workflow_dispatch:
 
 jobs:
