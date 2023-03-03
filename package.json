@@ -3,7 +3,7 @@
 	"displayName": "MetaEd IDE",
 	"description": "Ed-Fi MetaEd IDE for Visual Studio Code",
 	"license": "SEE LICENSE IN LICENSE.md",
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"publishConfig": {
 		"registry": "https://www.myget.org/F/ed-fi/npm/"
 	},
