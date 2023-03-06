@@ -9,6 +9,9 @@ on:
     types:
       - prereleased
 
+env:
+  GITHUB_TOKEN: ${{ secrets.ATTACH_TO_RELEASE }}
+
 jobs:
   package:
     name: Build VSIX Package
@@ -84,4 +87,33 @@ jobs:
           name: vscode-metaed.vsix
           path: vscode-metaed.vsix
           sha256: "${{ needs.package.outputs.hash-code }}"
+
+      - name: Attach to release
+        shell: pwsh
+        run: |
+          $release = "${{ github.ref_name }}"
+          $repo = "${{ github.repository }}"
+          $token = "${{ env.GITHUB_TOKEN }}"
+          $file = "vscode-metaed.vsix"
+          $uploadName = "vscode-metaed.vsix"
+
+          $url = "https://api.github.com/repos/$repo/releases/tags/$release"
+
+          $gh_headers = @{
+              "Accept"        = "application/vnd.github+json"
+              "Authorization" = "Bearer $token"
+          }
+
+          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers
+          $releaseId = $response.id
+
+          $url = "https://uploads.github.com/repos/$repo/releases/$releaseId/assets"
+
+          Compress-Archive $file -DestinationPath $uploadName
+
+          $gh_headers["Content-Type"] = "application/octet"
+          Invoke-RestMethod -Method POST `
+              -Uri "$($url)?name=$($uploadName)" `
+              -Headers $gh_headers `
+              -InFile $uploadName
 
