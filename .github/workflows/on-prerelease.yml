@@ -94,7 +94,6 @@ jobs:
           $release = "${{ github.ref_name }}"
           $repo = "${{ github.repository }}"
           $token = "${{ env.GITHUB_TOKEN }}"
-          $file = "vscode-metaed.vsix"
           $uploadName = "vscode-metaed.vsix"
 
           $url = "https://api.github.com/repos/$repo/releases/tags/$release"
@@ -108,8 +107,6 @@ jobs:
           $releaseId = $response.id
 
           $url = "https://uploads.github.com/repos/$repo/releases/$releaseId/assets"
-
-          Compress-Archive $file -DestinationPath $uploadName
 
           $gh_headers["Content-Type"] = "application/octet"
           Invoke-RestMethod -Method POST `
