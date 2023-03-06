@@ -10,7 +10,7 @@ on:
       - prereleased
 
 env:
-  GITHUB_TOKEN: ${{ secrets.ATTACH_TO_RELEASE }}
+  GITHUB_TOKEN: ${{ secrets.PAT_ATTACH_TO_RELEASE }}
 
 jobs:
   package:
