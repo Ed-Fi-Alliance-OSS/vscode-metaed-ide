@@ -11,7 +11,7 @@ on:
       - released
 
 env:
-  VS_MARKETPLACE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.ATTACH_TO_RELEASE }}
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
 jobs:
