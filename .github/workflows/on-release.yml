@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
-        
+
       - name: Install vsce
         run: npm install --global @vscode/vsce
 
@@ -55,4 +55,4 @@ jobs:
           Invoke-RestMethod -Uri $url -Outfile $file
 
       - name: Publish to the marketplace
-        run: npx vsce publish --allow-star-activation          
+        run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix        
