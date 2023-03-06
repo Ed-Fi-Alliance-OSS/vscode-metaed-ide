@@ -60,7 +60,7 @@ jobs:
         id: hash-code
         run: |
           # sha256sum returns "<hashcode>  <name of file". Split that and return only the <hashcode>.
-          hash=$(sha256sum ./extensions/vscode-metaed.vsix | awk '{split($0,a); print a[1]}')
+          hash=$(sha256sum ./extension/vscode-metaed.vsix | awk '{split($0,a); print a[1]}')
           echo "hash-code=$hash" >> $GITHUB_OUTPUT
 
       - name: Upload vsix package
