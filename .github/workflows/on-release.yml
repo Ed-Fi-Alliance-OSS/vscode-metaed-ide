@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
+name: On Release
+
+on:
+  release:
+    types:
+      - released
+
+env:
+  VS_MARKETPLACE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+  VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+jobs:
+  publish:
+    name: Publish VSIX to Visual Studio Marketplace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install vsce
+        run: npm install --global @vscode/vsce
+
+      - name: Retrieve VSIX from release
+        shell: pwsh
+        run: |
+          $releaseId = "${{ github.ref_name }}"
+          $repo = "${{ github.repository }}"
+          $token = "${{ env.GITHUB_TOKEN }}"
+          $file = "vscode-metaed.vsix"
+
+          # Get a list of assets
+          $url = "https://api.github.com/repos/$repo/releases/$releaseId/assets"
+
+          $gh_headers = @{
+              "Accept"        = "application/vnd.github+json"
+              "Authorization" = "Bearer $token"
+          }
+
+          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers         
+
+          $response | ForEach-Object {
+              if ($_.name -eq $file) {
+                  $uri = $_.browswer_download_url
+
+                  Invoke-RestMethod -Uri $uri -OutFile ./$file
+
+                  return
+              }
+          }
+
+          Write-Output "::error Did not find $file in the list of assets"
+          exit -1
+
+      - name: Publish to the marketplace
+        run: npx vsce publish --allow-star-activation
+          
+
