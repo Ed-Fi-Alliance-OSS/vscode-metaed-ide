@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
+name: On Pre-Release
+on:
+  release:
+    types:
+      - prereleased
+
+jobs:
+  package:
+    name: Build VSIX Package
+    runs-on: ubuntu-latest
+    outputs:
+      hash-code: ${{ steps.hash-code.outputs.hash-code }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
+
+      - name: Setup Node
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+        with:
+          node-version: "16"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Node modules cache
+        id: modules-cache
+        uses: actions/cache@9b0c1fce7a93df8e3bb8926b0d6e9d89e92f20a7 #v3.0.11
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.modules-cache.outputs.cache-hit != 'true' }}
+        run: npm install
+
+      - name: Load prior build from cache if available
+        id: build-cache
+        uses: actions/cache@9b0c1fce7a93df8e3bb8926b0d6e9d89e92f20a7 #v3.0.11
+        with:
+          path: "**/dist/**"
+          key: ${{ runner.os }}-build-${{ hashFiles('**/dist/**') }}
+
+      - name: Build Typescript
+        if: ${{ steps.build-cache.outputs.cache-hit != 'true' }}
+        run: npm run build
+
+      - name: Install vsce
+        run: npm install --global @vscode/vsce
+
+      - name: Build vsix package
+        run: |
+          npm run package:clean
+          npm run package:vsce
+
+      - name: Generate hash code for VSIX file
+        id: hash-code
+        run: |
+          # sha256sum returns "<hashcode>  <name of file". Split that and return only the <hashcode>.
+          hash=$(sha256sum ./extensions/vscode-metaed.vsix | awk '{split($0,a); print a[1]}')
+          echo "hash-code=$hash" >> $GITHUB_OUTPUT
+
+      - name: Upload vsix package
+        uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3.1.1
+        with:
+          name: vscode-metaed.vsix
+          path: extension/vscode-metaed.vsix
+          retention-days: 1
+
+  packages-attach:
+    name: Attach Package to Release
+    runs-on: ubuntu-latest
+    needs: pack
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Securely retrieve the package from artifacts
+        uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-artifact@1d646d70aeba1516af69fb0ef48206580122449b
+        with:
+          name: vscode-metaed.vsix
+          path: vscode-metaed.vsix
+          sha256: "${{ needs.package.outputs.hash-code }}"
+
