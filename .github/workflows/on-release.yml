@@ -11,7 +11,6 @@ on:
       - released
 
 env:
-  GITHUB_TOKEN: ${{ secrets.ATTACH_TO_RELEASE }}
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
 jobs:
@@ -25,35 +24,32 @@ jobs:
       - name: Retrieve VSIX from release
         shell: pwsh
         run: |
-          $releaseId = "${{ github.ref_name }}"
+          $tag = "${{ github.ref_name }}"
           $repo = "${{ github.repository }}"
-          $token = "${{ env.GITHUB_TOKEN }}"
           $file = "vscode-metaed.vsix"
 
           # Get a list of assets
-          $url = "https://api.github.com/repos/$repo/releases/$releaseId/assets"
+          $url = "https://api.github.com/repos/$repo/releases"
 
-          $gh_headers = @{
-              "Accept"        = "application/vnd.github+json"
-              "Authorization" = "Bearer $token"
+          $response = Invoke-RestMethod -Uri $url
+
+          $response | 
+            Where-Object { $_.name -eq $tag } |
+            Where-Object { $_.assets}
+          
+          try {
+            $url = $response |
+              Where-Object { $_.name -eq $tag } |
+              Select-Object -ExpandProperty assets |
+              Where-Object { $_.name -eq $file } |
+              Select-Object -ExpandProperty browser_download_url
+          }
+          catch {
+            Write-Output "::error Did not find $file in the list of assets"
+            exit 1
           }
 
-          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers         
-
-          $response | ForEach-Object {
-              if ($_.name -eq $file) {
-                  $uri = $_.browswer_download_url
-
-                  Invoke-RestMethod -Uri $uri -OutFile ./$file
-
-                  return
-              }
-          }
-
-          Write-Output "::error Did not find $file in the list of assets"
-          exit -1
+          Invoke-RestMethod -Uri $url -Outfile $file
 
       - name: Publish to the marketplace
-        run: npx vsce publish --allow-star-activation
-          
-
+        run: npx vsce publish --allow-star-activation          
