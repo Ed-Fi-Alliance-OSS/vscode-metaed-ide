@@ -82,7 +82,7 @@ jobs:
       contents: write
     steps:
       - name: Securely retrieve the package from artifacts
-        uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-artifact@1d646d70aeba1516af69fb0ef48206580122449b
+        uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-artifact@7f4fdb8  # v1.5.0
         with:
           name: vscode-metaed.vsix
           path: vscode-metaed.vsix
