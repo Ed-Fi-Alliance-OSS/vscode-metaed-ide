@@ -6,7 +6,7 @@ import { TelemetrySender, env, extensions } from 'vscode';
 import bugsnag from '@bugsnag/js';
 
 bugsnag.start({
-  apiKey: '935aa2343fcce2db62e77c03c2080251',
+  apiKey: 'BUGSNAGKEY',
   appVersion: extensions.getExtension('Ed-FiAlliance.vscode-metaed-ide')?.packageJSON?.version ?? 'unknown',
   user: {
     id: env.machineId,
