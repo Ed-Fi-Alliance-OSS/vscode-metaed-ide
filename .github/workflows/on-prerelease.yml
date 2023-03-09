@@ -11,6 +11,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.PAT_ATTACH_TO_RELEASE }}
+  BUG_SNAG_KEY: ${{ secrets.BUG_SNAG_KEY}}
 
 jobs:
   package:
@@ -46,6 +47,9 @@ jobs:
         with:
           path: "**/dist/**"
           key: ${{ runner.os }}-build-${{ hashFiles('**/dist/**') }}
+
+      - name: Inject the BugSnag key into the code
+        run: sed -i 's/BUGSNAGKEY/${{ env.BUG_SNAG_KEY}}/g' src/client/BugsnagTelemetrySender.ts
 
       - name: Build Typescript
         if: ${{ steps.build-cache.outputs.cache-hit != 'true' }}
