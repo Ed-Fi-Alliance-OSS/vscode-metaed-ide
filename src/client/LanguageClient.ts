@@ -4,6 +4,7 @@
 /* eslint-disable import/no-unresolved */
 import {
   commands,
+  env,
   workspace,
   window,
   ExtensionContext,
@@ -18,6 +19,7 @@ import {
   Range,
   ConfigurationChangeEvent,
   WorkspaceFoldersChangeEvent,
+  TelemetryLogger,
 } from 'vscode';
 import path from 'path';
 import debounce from 'p-debounce';
@@ -27,9 +29,12 @@ import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDe
 import type { DeployParameters } from '../model/DeployParameters';
 import { createServerMessage } from './ServerMessageFactory';
 import type { ServerMessage } from '../model/ServerMessage';
+import { telemetrySender } from './BugsnagTelemetrySender';
 import { ensureBundledDsReadOnly } from './DataStandardManager';
 
 let client: LanguageClient;
+// @ts-ignore - telemetryLogger never read, but is being used by VS Code
+let telemetryLogger: TelemetryLogger | null = null;
 const acceptedLicenseDiagnosticCollection: DiagnosticCollection = languages.createDiagnosticCollection('acceptedLicense');
 
 const sendLintCommandToServer: () => Promise<void> = debounce(async () => {
@@ -123,6 +128,16 @@ async function addSubscriptions(context: ExtensionContext) {
     commands.registerCommand('metaed.lint', () => {
       (async () => {
         await sendLintCommandToServer();
+      })();
+    }),
+  );
+
+  // Crash for testing of exception reporting
+  context.subscriptions.push(
+    commands.registerCommand('metaed.crash', () => {
+      (() => {
+        // @ts-ignore - intentionally undefined
+        thisCrashTrigger.is(undefined); // eslint-disable-line no-undef
       })();
     }),
   );
@@ -246,6 +261,9 @@ export async function listenForAcceptedLicenseChange(context: ExtensionContext) 
  * Extension lifecycle function invoked by VS Code to activate extension
  */
 export async function activate(context: ExtensionContext) {
+  // Set up telemetry for exception logging
+  telemetryLogger = env.createTelemetryLogger(telemetrySender);
+
   const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'LanguageServer.js'));
   const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
 
@@ -299,6 +317,7 @@ export async function activate(context: ExtensionContext) {
  * Extension lifecycle function invoked by VS Code to deactivate extension
  */
 export function deactivate(): Promise<void> | undefined {
+  telemetryLogger = null;
   if (!client) {
     return undefined;
   }
