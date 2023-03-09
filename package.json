@@ -15,7 +15,7 @@
 	},
 	"homepage": "https://techdocs.ed-fi.org/display/EDFITOOLS/MetaEd+IDE",
 	"engines": {
-		"vscode": "^1.74.0"
+		"vscode": "^1.76.0"
 	},
 	"categories": [
 		"Other"
