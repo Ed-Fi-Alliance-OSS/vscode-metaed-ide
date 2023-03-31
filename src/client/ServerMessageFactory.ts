@@ -87,7 +87,7 @@ export async function createServerMessage(
   if (!odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion })) {
     // Selected DS version and ODS/API version are not compatible
     await notifyError(
-      `ODS/API version ${odsApiVersion} in settings requires data standard project at ${dsVersionToModelProjectDirectory(
+      `ODS/API version ${odsApiVersion} under File -> Preferences -> Settings requires data standard project at ${dsVersionToModelProjectDirectory(
         odsApiVersionSupports(odsApiVersion),
       )}`,
       outputChannel,

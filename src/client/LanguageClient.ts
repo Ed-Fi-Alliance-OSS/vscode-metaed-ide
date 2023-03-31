@@ -68,7 +68,9 @@ async function addSubscriptions(context: ExtensionContext) {
     commands.registerCommand('metaed.build', () => {
       (async () => {
         if (!acceptedLicense()) {
-          await showErrorNotification('You must first accept the Ed-Fi License Agreement in Workspace settings.');
+          await showErrorNotification(
+            'You must first accept the Ed-Fi License Agreement under File -> Preferences -> Settings.',
+          );
           return;
         }
 
@@ -89,12 +91,14 @@ async function addSubscriptions(context: ExtensionContext) {
     commands.registerCommand('metaed.deploy', () => {
       (async () => {
         if (!acceptedLicense()) {
-          await showErrorNotification('You must first accept the Ed-Fi License Agreement in Workspace settings.');
+          await showErrorNotification(
+            'You must first accept the Ed-Fi License Agreement under File -> Preferences -> Settings.',
+          );
           return;
         }
 
         if (getOdsApiDeploymentDirectory() === '') {
-          await showInfoNotification('To deploy, set Ods Api Deployment Directory in Workspace settings.');
+          await showInfoNotification('To deploy, set Ods Api Deployment Directory under File -> Preferences -> Settings.');
           return;
         }
 
@@ -202,7 +206,9 @@ async function addSubscriptions(context: ExtensionContext) {
             `MetaEd deploy success: Find results under '${getOdsApiDeploymentDirectory()}' ODS/API folder.`,
           );
         } else {
-          await showInfoNotification('MetaEd deploy failure - see Problems window and/or check ODS/API path in settings');
+          await showInfoNotification(
+            'MetaEd deploy failure - see Problems window and/or check ODS/API path under File -> Preferences -> Settings',
+          );
         }
       })();
     }),
@@ -221,7 +227,7 @@ async function syncAcceptedLicenseDiagnostic() {
     acceptedLicenseDiagnosticCollection.set(Uri.parse('metaed:Ed-Fi License Needs Accepting', true), [
       new Diagnostic(
         new Range(new Position(0, 0), new Position(0, 0)),
-        'Please accept the Ed-Fi License Agreement in Workspace settings',
+        'Please accept the Ed-Fi License Agreement under File -> Preferences -> Settings',
       ),
     ]);
   }
