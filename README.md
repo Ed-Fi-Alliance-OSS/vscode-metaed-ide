@@ -73,6 +73,10 @@ Please report support issues in [Ed-Fi Tracker](https://tracker.ed-fi.org).
 
 ## Release Notes
 
+### 4.0.1
+
+Includes missing plugins for changequery functionality.
+
 ### 4.0.0
 
 Supports MetaEd 4.0; first version on Visual Studio Code. For more details,
