@@ -6,7 +6,6 @@ import { DiagnosticSeverity } from 'vscode-languageserver/node';
 import type { Connection, Diagnostic } from 'vscode-languageserver/node';
 import { executePipeline, newState } from '@edfi/metaed-core';
 import type { State } from '@edfi/metaed-core';
-import { defaultPlugins } from '@edfi/metaed-default-plugins';
 import { ServerMessage } from '../model/ServerMessage';
 
 // Tracks which files have been marked with failures and sent to the client. Important for keeping the
@@ -26,7 +25,6 @@ export async function lint(
       stopOnValidationFailure: false,
     },
     metaEdConfiguration,
-    metaEdPlugins: defaultPlugins(),
   };
 
   state.metaEd.dataStandardVersion = dataStandardVersion;

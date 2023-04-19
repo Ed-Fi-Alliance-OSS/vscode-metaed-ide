@@ -3,7 +3,6 @@
 
 import { Connection, createConnection, ProposedFeatures } from 'vscode-languageserver/node';
 import { State, executePipeline, newState } from '@edfi/metaed-core';
-import { defaultPlugins } from '@edfi/metaed-default-plugins';
 import { runDeployTasks } from '@edfi/metaed-odsapi-deploy';
 import type { DeployParameters } from '../model/DeployParameters';
 import { lint } from './Linter';
@@ -26,7 +25,6 @@ async function build({ metaEdConfiguration, dataStandardVersion }: ServerMessage
       stopOnValidationFailure: true,
     },
     metaEdConfiguration,
-    metaEdPlugins: defaultPlugins(),
   };
   state.metaEd.dataStandardVersion = dataStandardVersion;
 
