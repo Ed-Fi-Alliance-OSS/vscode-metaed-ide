@@ -113,3 +113,9 @@ jobs:
           name: vscode-metaed.vsix
           path: extension/vscode-metaed.vsix
           retention-days: 10
+
+      - name: Setup tmate session
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        uses: mxschmitt/action-tmate@28f608baaa037465aa887c21a7924e9e6b66a9e0 # v3.13
+        timeout-minutes: 10
