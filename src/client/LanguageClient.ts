@@ -4,7 +4,6 @@
 /* eslint-disable import/no-unresolved */
 import {
   commands,
-  env,
   workspace,
   window,
   ExtensionContext,
@@ -29,7 +28,6 @@ import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDe
 import type { DeployParameters } from '../model/DeployParameters';
 import { createServerMessage } from './ServerMessageFactory';
 import type { ServerMessage } from '../model/ServerMessage';
-import { telemetrySender } from './BugsnagTelemetrySender';
 import { ensureBundledDsReadOnly } from './DataStandardManager';
 
 let client: LanguageClient;
@@ -267,9 +265,6 @@ export async function listenForAcceptedLicenseChange(context: ExtensionContext) 
  * Extension lifecycle function invoked by VS Code to activate extension
  */
 export async function activate(context: ExtensionContext) {
-  // Set up telemetry for exception logging
-  telemetryLogger = env.createTelemetryLogger(telemetrySender);
-
   const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'LanguageServer.js'));
   const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
 

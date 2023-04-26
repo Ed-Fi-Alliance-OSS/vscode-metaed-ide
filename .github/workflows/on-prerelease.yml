@@ -48,9 +48,6 @@ jobs:
           path: "**/dist/**"
           key: ${{ runner.os }}-build-${{ hashFiles('**/dist/**') }}
 
-      - name: Inject the BugSnag key into the code
-        run: sed -i 's/BUGSNAGKEY/${{ env.BUG_SNAG_KEY}}/g' src/client/BugsnagTelemetrySender.ts
-
       - name: Build Typescript
         if: ${{ steps.build-cache.outputs.cache-hit != 'true' }}
         run: npm run build
