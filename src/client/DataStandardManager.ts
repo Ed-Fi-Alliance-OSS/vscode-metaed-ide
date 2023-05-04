@@ -26,6 +26,7 @@ const odsApiToDsVersion: Map<string, string> = new Map([
   ['5.3.0', '3.3.1-b'],
   ['6.0.0', '4.0.0-a'],
   ['6.1.0', '4.0.0'],
+  ['7.0.0', '5.0.0-pre.1'],
 ]);
 
 /**
