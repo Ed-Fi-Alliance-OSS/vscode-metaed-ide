@@ -3,8 +3,10 @@
 	"displayName": "MetaEd IDE",
 	"description": "Ed-Fi MetaEd IDE for Visual Studio Code",
 	"license": "SEE LICENSE IN LICENSE.md",
-	"version": "4.0.2-dev.0",
-	"private": true,
+	"version": "4.0.2-dev.1",
+	"publishConfig": {
+		"registry": "https://pkgs.dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_packaging/EdFi/npm/registry/"
+	},
 	"publisher": "Ed-FiAlliance",
 	"icon": "static/ed-fi-128x128.png",
 	"repository": {
