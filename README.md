@@ -73,6 +73,10 @@ Please report support issues in [Ed-Fi Tracker](https://tracker.ed-fi.org).
 
 ## Release Notes
 
+### 4.1.0
+
+"Big" integer support, Drops Data Standard 2.x support.
+
 ### 4.0.1
 
 Includes missing plugins for changequery functionality.
