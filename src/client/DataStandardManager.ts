@@ -7,13 +7,15 @@ import { promisify } from 'node:util';
 import { Extension, extensions, window, workspace } from 'vscode';
 import chmodr from 'chmodr';
 import * as R from 'ramda';
-import type { SemVer } from '@edfi/metaed-core';
+import { SemVer, versionSatisfies } from '@edfi/metaed-core';
+
+export type SemVerRange = string;
 
 // promise version of chmodr
 const chmodrp = promisify(chmodr);
 
-// keys are ODS/API versions, values are corresponding DS versions supported
-const odsApiToDsVersion: Map<string, string> = new Map([
+// keys are ODS/API versions, values are corresponding DS version ranges supported
+const odsApiToDsVersionRange: Map<SemVer, SemVerRange> = new Map([
   ['3.0.0', '3.0.0'],
   ['3.1.0', '3.1.0'],
   ['3.1.1', '3.1.0'],
@@ -26,7 +28,7 @@ const odsApiToDsVersion: Map<string, string> = new Map([
   ['5.3.0', '3.3.1-b'],
   ['6.0.0', '4.0.0-a'],
   ['6.1.0', '4.0.0'],
-  ['7.0.0', '5.0.0-pre.1'],
+  ['7.0.0', '>=4.0.0'],
 ]);
 
 /**
@@ -48,12 +50,12 @@ function nodeModulesPath(moduleName: string) {
 }
 
 /**
- * Returns the bundled data model project directory for the given data standard version
+ * Returns a recommended bundled data model project directory for the given data standard version range
  */
-export function dsVersionToModelProjectDirectory(dsVersion: string): string {
+export function dsVersionRangeToModelProjectDirectory(dsVersionRange: SemVerRange): string {
   let modelPath = '';
 
-  switch (dsVersion) {
+  switch (dsVersionRange) {
     case '3.0.0':
       modelPath = nodeModulesPath('ed-fi-model-3.0');
       break;
@@ -81,6 +83,9 @@ export function dsVersionToModelProjectDirectory(dsVersion: string): string {
     case '4.0.0':
       modelPath = nodeModulesPath('ed-fi-model-4.0');
       break;
+    case '>=4.0.0':
+      modelPath = nodeModulesPath('ed-fi-model-5.0-pre.1');
+      break;
     default:
       break;
   }
@@ -88,20 +93,20 @@ export function dsVersionToModelProjectDirectory(dsVersion: string): string {
   return modelPath;
 }
 
-export type DsVersionAndOdsApiVersion = { dataStandardVersion: SemVer; odsApiVersion: SemVer };
+export type DsVersionAndOdsApiVersion = { dataStandardVersion: SemVerRange; odsApiVersion: SemVerRange };
+
+/**
+ * Returns the Data Standard version range supported by the given ODS/API version
+ */
+export function odsApiVersionSupportsRange(odsApiVersion: SemVerRange): SemVerRange {
+  return odsApiToDsVersionRange.get(odsApiVersion) ?? '3.0.0';
+}
 
 /**
  * Returns true if the given ODS/API version supports the given Data Standard version
  */
 export function odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion }): boolean {
-  return odsApiToDsVersion.get(odsApiVersion) === dataStandardVersion;
-}
-
-/**
- * Returns the Data Standard version supported by the given ODS/API version
- */
-export function odsApiVersionSupports(odsApiVersion: SemVer): SemVer {
-  return odsApiToDsVersion.get(odsApiVersion) ?? '0.0.0';
+  return versionSatisfies(dataStandardVersion, odsApiVersionSupportsRange(odsApiVersion));
 }
 
 /**

@@ -40,7 +40,7 @@ async function build({ metaEdConfiguration, dataStandardVersion }: ServerMessage
  * @returns true if the deploy was successful
  */
 async function deploy({ serverMessage, deployCore, suppressDelete }: DeployParameters): Promise<boolean> {
-  return runDeployTasks(serverMessage.metaEdConfiguration, deployCore, suppressDelete);
+  return runDeployTasks(serverMessage.metaEdConfiguration, serverMessage.dataStandardVersion, deployCore, suppressDelete);
 }
 
 clientConnection.onNotification('metaed/build', (serverMessage: ServerMessage) => {

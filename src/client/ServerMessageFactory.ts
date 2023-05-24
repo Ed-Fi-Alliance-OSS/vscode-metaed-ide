@@ -12,8 +12,8 @@ import { showErrorNotification, showInfoNotification } from './Utility';
 import {
   bundledDsRootPath,
   odsApiVersionSupportsDsVersion,
-  dsVersionToModelProjectDirectory,
-  odsApiVersionSupports,
+  dsVersionRangeToModelProjectDirectory,
+  odsApiVersionSupportsRange,
 } from './DataStandardManager';
 
 type ServerMessageFactoryOptions = {
@@ -87,8 +87,8 @@ export async function createServerMessage(
   if (!odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion })) {
     // Selected DS version and ODS/API version are not compatible
     await notifyError(
-      `ODS/API version ${odsApiVersion} under File -> Preferences -> Settings requires data standard project at ${dsVersionToModelProjectDirectory(
-        odsApiVersionSupports(odsApiVersion),
+      `ODS/API version ${odsApiVersion} under File -> Preferences -> Settings requires data standard project such as at ${dsVersionRangeToModelProjectDirectory(
+        odsApiVersionSupportsRange(odsApiVersion),
       )}`,
       outputChannel,
       showUiNotifications,
