@@ -6,8 +6,9 @@ import { promisify } from 'node:util';
 // eslint-disable-next-line import/no-unresolved
 import { Extension, extensions, window, workspace } from 'vscode';
 import chmodr from 'chmodr';
+import semver from 'semver';
 import * as R from 'ramda';
-import { SemVer, versionSatisfies } from '@edfi/metaed-core';
+import { SemVer } from '@edfi/metaed-core';
 
 export type SemVerRange = string;
 
@@ -106,7 +107,7 @@ export function odsApiVersionSupportsRange(odsApiVersion: SemVerRange): SemVerRa
  * Returns true if the given ODS/API version supports the given Data Standard version
  */
 export function odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion }): boolean {
-  return versionSatisfies(dataStandardVersion, odsApiVersionSupportsRange(odsApiVersion));
+  return semver.satisfies(dataStandardVersion, odsApiVersionSupportsRange(odsApiVersion), { includePrerelease: true });
 }
 
 /**
