@@ -84,15 +84,7 @@ jobs:
         with:
           languages: javascript
 
-      - name: Build Cache
-        id: build-cache
-        uses: actions/cache@9b0c1fce7a93df8e3bb8926b0d6e9d89e92f20a7 #v3.0.11
-        with:
-          path: "**/dist/**"
-          key: ${{ runner.os }}-build-${{ hashFiles('**/dist/**') }}
-
       - name: Build
-        if: ${{ steps.build-cache.outputs.cache-hit != 'true' }}
         run: npm run build
 
       - name: Perform CodeQL Analysis
