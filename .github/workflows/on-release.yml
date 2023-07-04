@@ -42,7 +42,7 @@ jobs:
           
           try {
             $url = $response |
-              Where-Object { $_.name -eq $tag } |
+              Where-Object { $_.tag_name -eq $tag } |
               Select-Object -ExpandProperty assets |
               Where-Object { $_.name -eq $file } |
               Select-Object -ExpandProperty browser_download_url
