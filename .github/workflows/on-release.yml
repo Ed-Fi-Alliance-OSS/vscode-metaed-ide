@@ -18,6 +18,12 @@ jobs:
     name: Publish VSIX to Visual Studio Marketplace
     runs-on: ubuntu-latest
     steps:
+      - name: Check if generated from pre-release
+        if: github.event.release.assets[0] == null
+        run: |
+          echo "Release must be generated from pre-release. More information: https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/docs/DEVELOPMENT.md#release "
+          exit 1
+      
       - name: Checkout repository
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
 
@@ -25,39 +31,12 @@ jobs:
         run: npm install --global @vscode/vsce
 
       - name: Retrieve VSIX from release
-        shell: pwsh
         run: |
-          $tag = "${{ github.ref_name }}"
-          $repo = "${{ github.repository }}"
-          $file = "vscode-metaed.vsix"
+          file="vscode-metaed.vsix"
+          tag="${{ github.ref_name }}"
 
-          # Get a list of assets
-          $url = "https://api.github.com/repos/$repo/releases"
-
-          $response = Invoke-RestMethod -Uri $url
-
-          $response | 
-            Where-Object { $_.name -eq $tag } |
-            Where-Object { $_.assets}
-          
-          try {
-            $url = $response |
-              Where-Object { $_.tag_name -eq $tag } |
-              Select-Object -ExpandProperty assets |
-              Where-Object { $_.name -eq $file } |
-              Select-Object -ExpandProperty browser_download_url
-
-            if(-not $url) {
-              throw "URL not found"
-            }
-          }
-          catch {
-            Write-Warning $_
-            Write-Output "::error Did not find $file in the list of assets"
-            exit 1
-          }
-
-          Invoke-RestMethod -Uri $url -Outfile $file
+          url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
+          curl $url --output $file
 
       - name: Publish to the marketplace
-        run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix        
+        run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix   
