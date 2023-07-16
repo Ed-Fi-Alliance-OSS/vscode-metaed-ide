@@ -5,5 +5,5 @@
 export type ProjectJsonFields = {
   projectName: string;
   projectVersion: string;
-  projectDescription?: string;
+  projectDescription: string;
 };

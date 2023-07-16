@@ -23,7 +23,7 @@ async function projectMetadataFromProjectJson(projectJsonFilePath: string): Prom
     const projectJsonFile: string = (await fs.readFile(projectJsonFilePath)).toString();
     const projectJson = JSON.parse(projectJsonFile);
     if (projectJson.metaEdProject && projectJson.metaEdProject.projectName && projectJson.metaEdProject.projectVersion) {
-      return projectJson.metaEdProject;
+      return { ...projectJson.metaEdProject, projectDescription: projectJson.description ?? '' };
     }
     return null;
   } catch (err) {
@@ -86,6 +86,7 @@ export async function findMetaEdProjects(): Promise<WorkspaceProjects> {
       projectName: projectJsonMetadata.projectName,
       projectVersion,
       namespaceName,
+      description: projectJsonMetadata.projectDescription,
       isExtensionProject: namespaceName !== 'EdFi',
       projectExtension: namespaceName === 'EdFi' ? '' : 'EXTENSION',
     });
