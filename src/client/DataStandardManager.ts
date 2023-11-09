@@ -30,6 +30,7 @@ const odsApiToDsVersionRange: Map<SemVer, SemVerRange> = new Map([
   ['6.0.0', '4.0.0-a'],
   ['6.1.0', '4.0.0'],
   ['7.0.0', '>=4.0.0'],
+  ['7.1.0', '>=4.0.0'],
 ]);
 
 /**
@@ -85,7 +86,7 @@ export function dsVersionRangeToModelProjectDirectory(dsVersionRange: SemVerRang
       modelPath = nodeModulesPath('ed-fi-model-4.0');
       break;
     case '>=4.0.0':
-      modelPath = nodeModulesPath('ed-fi-model-5.0-pre.2');
+      modelPath = nodeModulesPath('ed-fi-model-5.0');
       break;
     default:
       break;
