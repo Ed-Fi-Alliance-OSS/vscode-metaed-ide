@@ -149,6 +149,9 @@
 		"test:lint:ts": "tsc -p . --noEmit"
 	},
 	"dependencies": {
+		"@edfi/ed-fi-model-3.2c": "3.0.2",
+		"@edfi/ed-fi-model-3.3b": "3.0.2",
+		"@edfi/ed-fi-model-4.0": "3.0.2",
 		"@edfi/metaed-console": "4.2.1",
 		"@edfi/metaed-core": "4.2.1",
 		"@edfi/metaed-default-plugins": "4.2.1",
