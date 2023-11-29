@@ -36,7 +36,13 @@ jobs:
           tag="${{ github.ref_name }}"
 
           url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
-          curl $url --output $file
+          curl -LO $url --fail
+          if [ -s $file ]; then
+            echo "File downloaded!"
+          else
+            echo "Error downloading file. Verify url: $url"
+            exit 1
+          fi
 
       - name: Publish to the marketplace
         run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix   
