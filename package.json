@@ -167,7 +167,7 @@
 		"chmodr": "^1.2.0",
 		"p-debounce": "2.1.0",
 		"ramda": "^0.28.0",
-		"semver": "^5.7.1",
+		"semver": "^5.7.2",
 		"tmp-promise": "^1.1.0",
 		"vscode-languageclient": "^8.0.0",
 		"vscode-languageserver": "^8.0.0",
