@@ -56,7 +56,7 @@ settings:
   ODS/API source code. The folder this points to should contain Ed-Fi-ODS and
   Ed-Fi-ODS-Implementation folders. Note: If Ed-Fi-ODS and
   Ed-Fi-ODS-Implementation folders are directly under a Drive(Example: C:, D:) 
-  then make sure to include path separating character at the end(C:\\, D:\\)
+  then make sure to include path separating character at the end(C:\, D:\). 
 * **Suppress Delete on Deploy**: Stop deployment from deleting the
   SupportingArtifacts API folder. For advanced users only.
 * **Telemetry Consent**: Select whether you are willing to submit anonymous
