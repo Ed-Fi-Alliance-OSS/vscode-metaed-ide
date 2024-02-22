@@ -23,6 +23,7 @@ import {
 import path from 'path';
 import debounce from 'p-debounce';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import * as fs from 'fs';
 import { showErrorNotification, showInfoNotification, yieldToNextMacroTask } from './Utility';
 import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDeleteOnDeploy } from './ExtensionSettings';
 import type { DeployParameters } from '../model/DeployParameters';
@@ -84,10 +85,23 @@ async function addSubscriptions(context: ExtensionContext) {
     }),
   );
 
+  function isValidDirectory(filePath: string): boolean {
+    try {
+      const stats = fs.statSync(filePath);
+      return stats.isDirectory();
+    } catch (error) {
+      return false;
+    }
+  }
+
   // Deploy command from user
   context.subscriptions.push(
     commands.registerCommand('metaed.deploy', () => {
       (async () => {
+        const deployDirectoryPath = getOdsApiDeploymentDirectory();
+        const implementationFolderPath = path.join(deployDirectoryPath, 'Ed-Fi-ODS-Implementation');
+        const odsFolderPath = path.join(deployDirectoryPath, 'Ed-Fi-ODS');
+        const drivePattern = /[a-zA-Z]:/;
         if (!acceptedLicense()) {
           await showErrorNotification(
             'You must first accept the Ed-Fi License Agreement under File -> Preferences -> Settings.',
@@ -95,8 +109,26 @@ async function addSubscriptions(context: ExtensionContext) {
           return;
         }
 
-        if (getOdsApiDeploymentDirectory() === '') {
-          await showInfoNotification('To deploy, set Ods Api Deployment Directory under File -> Preferences -> Settings.');
+        if (deployDirectoryPath === '') {
+          await showErrorNotification('To deploy, set Ods Api Deployment Directory under File -> Preferences -> Settings.');
+          return;
+        }
+        if (!isValidDirectory(deployDirectoryPath)) {
+          await showErrorNotification(
+            'Directory path not found, set proper Ods Api Deployment Directory under File -> Preferences -> Settings.',
+          );
+          return;
+        }
+        if (drivePattern.test(deployDirectoryPath) && !deployDirectoryPath.substring(0, 3).endsWith(path.sep)) {
+          await showErrorNotification(
+            'Incorrect directory path, set proper Ods Api Deployment Directory (Example: C:\\ or C:\\Dev) under File -> Preferences -> Settings.',
+          );
+          return;
+        }
+        if (!isValidDirectory(implementationFolderPath) || !isValidDirectory(odsFolderPath)) {
+          await showErrorNotification(
+            'API source directory is not correctly pointing to a folder that has Ed-Fi-ODS-Implementation and Ed-Fi-ODS folders. Please make sure to set correct Ods Api Deployment Directory under File -> Preferences -> Settings.',
+          );
           return;
         }
 
