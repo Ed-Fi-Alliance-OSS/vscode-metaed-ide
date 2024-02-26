@@ -121,7 +121,7 @@ async function addSubscriptions(context: ExtensionContext) {
           );
           return;
         }
-        if (process.platform.indexOf('win') !== -1) {
+        if (process.platform === 'win32') {
           const drive = deployDirectoryPath.substring(0, 3);
           if (drivePattern.test(deployDirectoryPath) && !endsWithSlash.test(drive)) {
             await showErrorNotification(
