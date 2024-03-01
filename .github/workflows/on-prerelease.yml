@@ -92,11 +92,12 @@ jobs:
         id: sbom-hash-code
         shell: bash
         run: |
-          less ./dist/${{ env.MANIFEST_FILE }}/manifest.spdx.json.sha256
+          # less ./dist/${{ env.MANIFEST_FILE }}
 
-          # sha256sum returns "<hashcode>  <name of file". Split that and return only the <hashcode>.
-          sbom_hash=$(sha256sum ./dist/${{ env.MANIFEST_FILE }} | awk '{split($0,a); print a[1]}')
-          echo "sbom-hash-code=$sbom_hash" >> $GITHUB_OUTPUT
+          # # sha256sum returns "<hashcode>  <name of file". Split that and return only the <hashcode>.
+          # sbom_hash=$(sha256sum ./dist/${{ env.MANIFEST_FILE }} | awk '{split($0,a); print a[1]}')
+          # echo "sbom-hash-code=$sbom_hash" >> $GITHUB_OUTPUT
+          cat ./dist/${{ env.MANIFEST_FILE }} >> $GITHUB_OUTPUT
 
   packages-attach:
     name: Attach Package to Release
@@ -107,7 +108,7 @@ jobs:
       contents: write
     steps:
       - name: Securely retrieve the package from artifacts
-        uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-artifact@07e64b653f10a80b6510f4568f685f8b7b9ea830 # v1.9.0
+        uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@main
         with:
           name: vscode-metaed.vsix
           path: vscode-metaed.vsix
@@ -149,7 +150,7 @@ jobs:
       contents: write
     steps:
       - name: Download the SBOM
-        uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-artifact@07e64b653f10a80b6510f4568f685f8b7b9ea830 # v1.9.0
+        uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@main
         with:
           name: "${{ env.PACKAGE_NAME }}-SBOM"
           path: ${{ env.MANIFEST_FILE }}
