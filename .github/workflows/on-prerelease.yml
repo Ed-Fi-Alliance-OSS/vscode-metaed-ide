@@ -79,7 +79,7 @@ jobs:
 
           sbom-tool generate -b dist -bc . -pn vscode-metaed-ide -pv $version -ps "Ed-Fi Alliance, LLC" -nsb https://ed-fi.org
 
-          cp ./dist/_manifest/spdx_2.2/manifes.spx.* .
+          cp ./dist/_manifest/spdx_2.2/manifest.spx.* .
 
       - name: Upload SBOM
         if: success()
