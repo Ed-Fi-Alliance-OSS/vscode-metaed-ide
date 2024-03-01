@@ -96,8 +96,8 @@ jobs:
 
           # # sha256sum returns "<hashcode>  <name of file". Split that and return only the <hashcode>.
           # sbom_hash=$(sha256sum ./dist/${{ env.MANIFEST_FILE }} | awk '{split($0,a); print a[1]}')
-          # echo "sbom-hash-code=$sbom_hash" >> $GITHUB_OUTPUT
-          cat ./dist/${{ env.MANIFEST_FILE }} >> $GITHUB_OUTPUT
+          
+          echo "sbom-hash-code=$(cat ./dist/${{ env.MANIFEST_FILE }})" >> $GITHUB_OUTPUT
 
   packages-attach:
     name: Attach Package to Release
