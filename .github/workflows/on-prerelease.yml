@@ -11,7 +11,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.PAT_ATTACH_TO_RELEASE }}
-  MANIFEST_FILE: "_manifest/spdx_2.2/manifest.spdx.json"
+  MANIFEST_FILE: "manifest.spdx.json"
   PACKAGE_NAME: "vscode-metaed-ide"
   REF: ${{ github.ref_name }}
 
@@ -79,25 +79,22 @@ jobs:
 
           sbom-tool generate -b dist -bc . -pn vscode-metaed-ide -pv $version -ps "Ed-Fi Alliance, LLC" -nsb https://ed-fi.org
 
+          cp _manifest/spdx_2.2/manifes.spx.* .
+
       - name: Upload SBOM
         if: success()
         uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: ${{ env.PACKAGE_NAME }}-SBOM
-          path: ./dist/_manifest
+          path: ${{ env.MANIFEST_FILE }}
           if-no-files-found: error
           retention-days: 30
 
       - name: Generate hash code for SBOM
         id: sbom-hash-code
         shell: bash
-        run: |
-          # less ./dist/${{ env.MANIFEST_FILE }}
-
-          # # sha256sum returns "<hashcode>  <name of file". Split that and return only the <hashcode>.
-          # sbom_hash=$(sha256sum ./dist/${{ env.MANIFEST_FILE }} | awk '{split($0,a); print a[1]}')
-          
-          sbom_hash=(cat ./dist/${{ env.MANIFEST_FILE }})
+        run: |          
+          sbom_hash=(cat ${{ env.MANIFEST_FILE }}.sha256)
           echo "sbom-hash-code=$sbom_hash" >> $GITHUB_OUTPUT
 
   packages-attach:
