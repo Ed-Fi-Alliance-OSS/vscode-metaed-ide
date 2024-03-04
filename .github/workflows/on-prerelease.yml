@@ -94,7 +94,7 @@ jobs:
         id: sbom-hash-code
         shell: bash
         run: |          
-          sbom_hash=(cat ${{ env.MANIFEST_FILE }}.sha256)
+          sbom_hash=$(cat ${{ env.MANIFEST_FILE }}.sha256)
           echo "sbom-hash-code=$sbom_hash"
           echo "sbom-hash-code=$sbom_hash" >> $GITHUB_OUTPUT
 
