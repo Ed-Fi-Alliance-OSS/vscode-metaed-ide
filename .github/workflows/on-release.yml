@@ -14,35 +14,73 @@ env:
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
 jobs:
-  publish:
-    name: Publish VSIX to Visual Studio Marketplace
+  # publish:
+  #   name: Publish VSIX to Visual Studio Marketplace
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check if generated from pre-release
+  #       if: github.event.release.assets[0] == null
+  #       run: |
+  #         echo "Release must be generated from pre-release. More information: https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/docs/DEVELOPMENT.md#release "
+  #         exit 1
+      
+  #     - name: Checkout repository
+  #       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+  #     - name: Install vsce
+  #       run: npm install --global @vscode/vsce
+
+  #     - name: Retrieve VSIX from release
+  #       run: |
+  #         file="vscode-metaed.vsix"
+  #         tag="${{ github.ref_name }}"
+
+  #         url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
+  #         curl -LO $url --fail
+  #         if [ -s $file ]; then
+  #           echo "File downloaded!"
+  #         else
+  #           echo "Error downloading file. Verify url: $url"
+  #           exit 1
+  #         fi
+
+  #     - name: Publish to the marketplace
+  #       run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix
+
+  delete-pre-releases:
+    name: Delete Unnecessary Pre-Releases
+    # needs: publish
     runs-on: ubuntu-latest
     steps:
-      - name: Check if generated from pre-release
-        if: github.event.release.assets[0] == null
-        run: |
-          echo "Release must be generated from pre-release. More information: https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/docs/DEVELOPMENT.md#release "
-          exit 1
-      
-      - name: Checkout repository
+      - name: Checkout the repo
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      - name: Install vsce
-        run: npm install --global @vscode/vsce
-
-      - name: Retrieve VSIX from release
+      - name: Delete other pre-releases and their tags
+        shell: pwsh
         run: |
-          file="vscode-metaed.vsix"
-          tag="${{ github.ref_name }}"
+          $release = "${{ github.ref_name }}"
+          $repo = "${{ github.repository }}"
+          $token = "${{ secrets.GITHUB_TOKEN }}"
 
-          url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
-          curl -LO $url --fail
-          if [ -s $file ]; then
-            echo "File downloaded!"
-          else
-            echo "Error downloading file. Verify url: $url"
-            exit 1
-          fi
+          $page = 1
+          $release_list = @()
 
-      - name: Publish to the marketplace
-        run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix
+          Do {
+
+            $url = "https://api.github.com/repos/$repo/releases?per_page=100&page=$page"
+            $gh_headers = @{
+                "Accept"        = "application/vnd.github+json"
+                "Authorization" = "Bearer $token"
+            }
+
+            $release_list = Invoke-RestMethod $url -Headers $gh_headers
+
+            $release_list | ForEach-Object {
+                if ($_.tag_name -like "Pre-Release-*" -and $_.prerelease) {
+                    "Deleting pre-release $($_.tag_name)" | Write-Output
+                    Invoke-RestMethod -Method Delete -Uri $_.url -Headers $gh_headers
+                }
+            }
+
+            $page += 1
+          } While ($release_list.count -gt 0)
