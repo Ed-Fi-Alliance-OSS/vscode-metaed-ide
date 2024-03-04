@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       hash-code: ${{ steps.hash-code.outputs.hash-code }}
+      sbom-hash-code: ${{ steps.sbom-hash-code.outputs.sbom-hash-code }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -153,7 +154,7 @@ jobs:
         with:
           name: "${{ env.PACKAGE_NAME }}-SBOM"
           path: ${{ env.MANIFEST_FILE }}
-          sha256: "${{ needs.sbom-create.outputs.sbom-hash-code }}"
+          sha256: "${{ needs.package.outputs.sbom-hash-code }}"
 
       - name: Attach to release
         shell: pwsh
