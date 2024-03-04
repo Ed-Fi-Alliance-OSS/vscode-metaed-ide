@@ -14,42 +14,42 @@ env:
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
 jobs:
-  # publish:
-  #   name: Publish VSIX to Visual Studio Marketplace
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check if generated from pre-release
-  #       if: github.event.release.assets[0] == null
-  #       run: |
-  #         echo "Release must be generated from pre-release. More information: https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/docs/DEVELOPMENT.md#release "
-  #         exit 1
+  publish:
+    name: Publish VSIX to Visual Studio Marketplace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if generated from pre-release
+        if: github.event.release.assets[0] == null
+        run: |
+          echo "Release must be generated from pre-release. More information: https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/docs/DEVELOPMENT.md#release "
+          exit 1
       
-  #     - name: Checkout repository
-  #       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-  #     - name: Install vsce
-  #       run: npm install --global @vscode/vsce
+      - name: Install vsce
+        run: npm install --global @vscode/vsce
 
-  #     - name: Retrieve VSIX from release
-  #       run: |
-  #         file="vscode-metaed.vsix"
-  #         tag="${{ github.ref_name }}"
+      - name: Retrieve VSIX from release
+        run: |
+          file="vscode-metaed.vsix"
+          tag="${{ github.ref_name }}"
 
-  #         url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
-  #         curl -LO $url --fail
-  #         if [ -s $file ]; then
-  #           echo "File downloaded!"
-  #         else
-  #           echo "Error downloading file. Verify url: $url"
-  #           exit 1
-  #         fi
+          url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
+          curl -LO $url --fail
+          if [ -s $file ]; then
+            echo "File downloaded!"
+          else
+            echo "Error downloading file. Verify url: $url"
+            exit 1
+          fi
 
-  #     - name: Publish to the marketplace
-  #       run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix
+      - name: Publish to the marketplace
+        run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix
 
   delete-pre-releases:
     name: Delete Unnecessary Pre-Releases
-    # needs: publish
+    needs: publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
