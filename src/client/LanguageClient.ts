@@ -24,6 +24,7 @@ import path from 'path';
 import debounce from 'p-debounce';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import * as fs from 'fs';
+import { DeployResult } from '@edfi/metaed-odsapi-deploy';
 import { showErrorNotification, showInfoNotification, yieldToNextMacroTask } from './Utility';
 import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDeleteOnDeploy } from './ExtensionSettings';
 import type { DeployParameters } from '../model/DeployParameters';
@@ -234,16 +235,14 @@ async function addSubscriptions(context: ExtensionContext) {
 
   // Listen for deployComplete message from server
   context.subscriptions.push(
-    client.onNotification('metaed/deployComplete', (success: boolean) => {
+    client.onNotification('metaed/deployComplete', (deployResult: DeployResult) => {
       (async () => {
-        if (success) {
+        if (deployResult.success) {
           await showInfoNotification(
             `MetaEd deploy success: Find results under '${getOdsApiDeploymentDirectory()}' ODS/API folder.`,
           );
         } else {
-          await showInfoNotification(
-            'MetaEd deploy failure - see Problems window and/or check ODS/API path under File -> Preferences -> Settings',
-          );
+          await showInfoNotification(`'MetaEd deploy failure - ${deployResult.failureMessage}'`);
         }
       })();
     }),

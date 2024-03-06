@@ -4,7 +4,7 @@
 import { Connection, createConnection, ProposedFeatures } from 'vscode-languageserver/node';
 import { State, executePipeline, newState } from '@edfi/metaed-core';
 import { defaultPlugins } from '@edfi/metaed-default-plugins';
-import { runDeployTasks } from '@edfi/metaed-odsapi-deploy';
+import { DeployResult, runDeployTasks } from '@edfi/metaed-odsapi-deploy';
 import type { DeployParameters } from '../model/DeployParameters';
 import { lint } from './Linter';
 import { ServerMessage } from '../model/ServerMessage';
@@ -39,7 +39,7 @@ async function build({ metaEdConfiguration, dataStandardVersion }: ServerMessage
  * Set up and call the metaed-odsapi-deploy build process
  * @returns true if the deploy was successful
  */
-async function deploy({ serverMessage, deployCore, suppressDelete }: DeployParameters): Promise<boolean> {
+async function deploy({ serverMessage, deployCore, suppressDelete }: DeployParameters): Promise<DeployResult> {
   return runDeployTasks(serverMessage.metaEdConfiguration, serverMessage.dataStandardVersion, deployCore, suppressDelete);
 }
 
@@ -63,10 +63,10 @@ clientConnection.onNotification('metaed/deploy', (deployParams: DeployParameters
     clientConnection.console.log(`${Date.now()}: Server sending build complete notification to client`);
     await clientConnection.sendNotification('metaed/buildComplete', buildSuccess);
 
-    const deploySuccess: boolean = await deploy(deployParams);
+    const deployResult: DeployResult = await deploy(deployParams);
 
     clientConnection.console.log(`${Date.now()}: Server sending deploy complete notification to client`);
-    await clientConnection.sendNotification('metaed/deployComplete', deploySuccess);
+    await clientConnection.sendNotification('metaed/deployComplete', deployResult);
   })();
 });
 
