@@ -227,7 +227,7 @@ async function addSubscriptions(context: ExtensionContext) {
             `MetaEd build success: Find results in 'MetaEdOutput' folder. You may need to refresh the VS Code file explorer.`,
           );
         } else {
-          await showInfoNotification('MetaEd build failure - see Problems window');
+          await showErrorNotification('MetaEd build failure - see Problems window');
         }
       })();
     }),
@@ -242,7 +242,7 @@ async function addSubscriptions(context: ExtensionContext) {
             `MetaEd deploy success: Find results under '${getOdsApiDeploymentDirectory()}' ODS/API folder.`,
           );
         } else {
-          await showInfoNotification(`'MetaEd deploy failure - ${deployResult.failureMessage}'`);
+          await showErrorNotification(`'MetaEd deploy failure: ${deployResult.failureMessage}'`);
         }
       })();
     }),
