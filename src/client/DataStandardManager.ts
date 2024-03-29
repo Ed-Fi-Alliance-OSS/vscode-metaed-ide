@@ -19,6 +19,7 @@ const chmodrp = promisify(chmodr);
 const odsApiToDsVersionRange: Map<SemVer, SemVerRange> = new Map([
   ['5.1', '3.2.0-c'],
   ['5.3', '3.3.1-b'],
+  ['5.4', '3.3.1-b'],
   ['6.1', '4.0.0'],
   ['6.2', '4.0.0'],
   ['7.1', '>=4.0.0'],
