@@ -5,7 +5,12 @@ import path from 'node:path';
 import type { OutputChannel } from 'vscode';
 import { findDataStandardVersions, MetaEdConfiguration, newMetaEdConfiguration, SemVer } from '@edfi/metaed-core';
 import { findMetaEdProjects } from './ProjectFinder';
-import { getTargetOdsApiVersionSemver, allianceMode, getOdsApiDeploymentDirectory } from './ExtensionSettings';
+import {
+  getTargetOdsApiVersionSemver,
+  allianceMode,
+  getOdsApiDeploymentDirectory,
+  getTargetOdsApiMajorMinorVersion,
+} from './ExtensionSettings';
 import { WorkspaceProjects } from '../model/WorkspaceProjects';
 import { ServerMessage } from '../model/ServerMessage';
 import { showErrorNotification, showInfoNotification } from './Utility';
@@ -87,7 +92,7 @@ export async function createServerMessage(
   if (!odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion })) {
     // Selected DS version and ODS/API version are not compatible
     await notifyError(
-      `ODS/API version ${odsApiVersion} under File -> Preferences -> Settings requires data standard project such as at ${dsVersionRangeToModelProjectDirectory(
+      `ODS/API version ${getTargetOdsApiMajorMinorVersion()} under File -> Preferences -> Settings requires data standard project such as at ${dsVersionRangeToModelProjectDirectory(
         odsApiVersionSupportsRange(odsApiVersion),
       )}`,
       outputChannel,

@@ -4,6 +4,7 @@
 // eslint-disable-next-line import/no-unresolved
 import { workspace, WorkspaceConfiguration } from 'vscode';
 import semver from 'semver';
+import { SemVer } from '@edfi/metaed-core';
 
 function getWorkspaceConfiguration(): WorkspaceConfiguration {
   return workspace.getConfiguration('metaed');
@@ -17,12 +18,13 @@ export function suppressDeleteOnDeploy(): boolean {
   return getWorkspaceConfiguration().get('suppressDeleteOnDeploy') ?? false;
 }
 
-export function getTargetOdsApiVersion(): string {
+export function getTargetOdsApiMajorMinorVersion(): string {
   return getWorkspaceConfiguration().get('targetOdsApiVersion') ?? '';
 }
 
-export function getTargetOdsApiVersionSemver(): string {
-  return (semver.coerce(getTargetOdsApiVersion()) || '').toString();
+export function getTargetOdsApiVersionSemver(): SemVer {
+  const targetOdsApiSemVer: string = `${getTargetOdsApiMajorMinorVersion()}.0`;
+  return (semver.coerce(targetOdsApiSemVer) || '').toString();
 }
 
 export function telemetryConsent(): string {
