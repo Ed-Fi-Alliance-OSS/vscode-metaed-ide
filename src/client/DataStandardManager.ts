@@ -18,6 +18,7 @@ const chmodrp = promisify(chmodr);
 // keys are ODS/API versions, values are corresponding DS version ranges supported
 const odsApiToDsVersionRange: Map<SemVer, SemVerRange> = new Map([
   ['5.1.0', '3.2.0-c'],
+  ['5.2.0', '3.3.1-b'],
   ['5.3.0', '3.3.1-b'],
   ['5.4.0', '3.3.1-b'],
   ['6.1.0', '4.0.0'],
