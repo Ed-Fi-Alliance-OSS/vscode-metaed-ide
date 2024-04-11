@@ -30,7 +30,7 @@ import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDe
 import type { DeployParameters } from '../model/DeployParameters';
 import { createServerMessage } from './ServerMessageFactory';
 import type { ServerMessage } from '../model/ServerMessage';
-import { ensureBundledDsReadOnly } from './DataStandardManager';
+import { bundledDsRootPath, ensureBundledDsReadOnly, isDataStandardProjectInWorkspace } from './DataStandardManager';
 
 let client: LanguageClient;
 // @ts-ignore - telemetryLogger never read, but is being used by VS Code
@@ -344,9 +344,35 @@ export async function activate(context: ExtensionContext) {
   await ensureBundledDsReadOnly();
   await yieldToNextMacroTask();
 
-  client.outputChannel.appendLine('MetaEd has started 🎬');
-  // eslint-disable-next-line no-void
-  void window.showInformationMessage('MetaEd has started 🎬');
+  client.outputChannel.appendLine('MetaEd has started 🎬 ');
+
+  if (!isDataStandardProjectInWorkspace()) {
+    // eslint-disable-next-line no-void
+    void window
+      .showInformationMessage(
+        `MetaEd has started 🎬 MetaEd requires a Data Standard project in the workspace. Bundled versions are at ${bundledDsRootPath()}`,
+        'Open Folder Location',
+      )
+      .then(async (selection) => {
+        if (selection === 'Open Folder Location') {
+          await window
+            .showOpenDialog({
+              defaultUri: Uri.file(bundledDsRootPath()),
+              canSelectFolders: true,
+              canSelectFiles: false,
+            })
+            .then(async (folderUri) => {
+              if (folderUri && folderUri[0]) {
+                workspace.updateWorkspaceFolders(0, 0, { uri: Uri.file(folderUri[0].fsPath) });
+              }
+            });
+        }
+      });
+  } else {
+    // eslint-disable-next-line no-void
+    void window.showInformationMessage('MetaEd has started 🎬');
+  }
+
   await yieldToNextMacroTask();
 }
 

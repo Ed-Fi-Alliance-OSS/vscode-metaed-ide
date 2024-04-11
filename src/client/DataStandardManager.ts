@@ -103,3 +103,21 @@ export async function ensureBundledDsReadOnly() {
     }
   }
 }
+
+/**
+ * Returns value indicating whether data standard project is in workspace
+ */
+export function isDataStandardProjectInWorkspace(): boolean {
+  if (workspace.workspaceFolders == null) return false;
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const workspaceFolder of workspace.workspaceFolders) {
+    const folderPath = workspaceFolder.uri.fsPath;
+
+    if (folderPath.includes(bundledDsRootPath())) {
+      return true;
+    }
+  }
+
+  return false;
+}
