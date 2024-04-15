@@ -105,9 +105,9 @@ export async function ensureBundledDsReadOnly() {
 }
 
 /**
- * Returns value indicating whether data standard project is in workspace
+ * Returns value indicating whether bundled data standard project is in workspace
  */
-export function isDataStandardProjectInWorkspace(): boolean {
+export function isBundledDataStandardProjectInWorkspace(): boolean {
   if (workspace.workspaceFolders == null) return false;
 
   // eslint-disable-next-line no-restricted-syntax

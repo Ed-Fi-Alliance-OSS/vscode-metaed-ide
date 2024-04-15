@@ -30,7 +30,7 @@ import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDe
 import type { DeployParameters } from '../model/DeployParameters';
 import { createServerMessage } from './ServerMessageFactory';
 import type { ServerMessage } from '../model/ServerMessage';
-import { bundledDsRootPath, ensureBundledDsReadOnly, isDataStandardProjectInWorkspace } from './DataStandardManager';
+import { bundledDsRootPath, ensureBundledDsReadOnly, isBundledDataStandardProjectInWorkspace } from './DataStandardManager';
 
 let client: LanguageClient;
 // @ts-ignore - telemetryLogger never read, but is being used by VS Code
@@ -346,7 +346,7 @@ export async function activate(context: ExtensionContext) {
 
   client.outputChannel.appendLine('MetaEd has started 🎬 ');
 
-  if (!isDataStandardProjectInWorkspace()) {
+  if (!isBundledDataStandardProjectInWorkspace() && !allianceMode()) {
     // eslint-disable-next-line no-void
     void window
       .showInformationMessage(
