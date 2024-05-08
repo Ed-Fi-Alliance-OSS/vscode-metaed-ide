@@ -62,7 +62,7 @@ export function dsVersionRangeToModelProjectDirectory(dsVersionRange: SemVerRang
       modelPath = nodeModulesPath('ed-fi-model-4.0');
       break;
     case '>=4.0.0':
-      modelPath = nodeModulesPath('ed-fi-model-5.0');
+      modelPath = nodeModulesPath('ed-fi-model-5.1');
       break;
     default:
       break;
