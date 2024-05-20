@@ -75,6 +75,21 @@ Please report support issues in [Ed-Fi Tracker](https://tracker.ed-fi.org).
 
 ## Release Notes
 
+### 4.4.0
+
+ODS/API 7.2 and Data Standard 5.1 support. Removed deprecation warnings for
+`is queryable only`, `is queryable`, `shorten to`, and the `Short` data type.
+Better visibility into Data Standard project locations.
+
+### 4.3.0
+
+ODS/API 7.1 and Data Standard 5.0 final support. Drops support for ODS/API and
+Data Standard versions no longer supported by the Ed-Fi Alliance.
+
+### 4.2.0
+
+ODS/API 7.0 and Data Standard 5.0-pre.2 support.
+
 ### 4.1.0
 
 "Big" integer support, Drops Data Standard 2.x support.
@@ -90,7 +105,7 @@ see [What's New](https://techdocs.ed-fi.org/x/gBOAAw) in Tech Docs.
 
 ## Legal
 
-Copyright © 2023, [Ed-Fi Alliance, LLC](https://www.ed-fi.org).
+Copyright © 2024, [Ed-Fi Alliance, LLC](https://www.ed-fi.org).
 
 Please see [LICENSE.md](LICENSE.md) for full details of the Ed-Fi License
 Agreement.
