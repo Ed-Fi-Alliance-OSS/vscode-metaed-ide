@@ -107,39 +107,22 @@ jobs:
       actions: read
       contents: write
     steps:
-      - name: Securely retrieve the package from artifacts
-        uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@main
-        with:
+     - name: Securely retrieve the package from artifacts
+       uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@main
+       with:
           name: vscode-metaed.vsix
           path: vscode-metaed.vsix
           sha256: "${{ needs.package.outputs.hash-code }}"
-
-      - name: Attach to release
-        shell: pwsh
-        run: |
-          $release = "${{ github.ref_name }}"
-          $repo = "${{ github.repository }}"
-          $token = "${{ env.GITHUB_TOKEN }}"
-          $uploadName = "vscode-metaed.vsix"
-
-          $url = "https://api.github.com/repos/$repo/releases/tags/$release"
-
-          $gh_headers = @{
-              "Accept"        = "application/vnd.github+json"
-              "Authorization" = "Bearer $token"
-          }
-
-          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers
-          $releaseId = $response.id
-
-          $url = "https://uploads.github.com/repos/$repo/releases/$releaseId/assets"
-
-          $gh_headers["Content-Type"] = "application/octet"
-          Invoke-RestMethod -Method POST `
-              -Uri "$($url)?name=$($uploadName)" `
-              -Headers $gh_headers `
-              -InFile $uploadName
-
+          
+     - name: Attach to release
+       uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 #v1.0.2
+       env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+       with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./vscode-metaed.vsix
+          asset_name: vscode-metaed.vsix
+          asset_content_type: application/octet
 
   sbom-attach:
     name: Attach SBOM file
@@ -156,31 +139,21 @@ jobs:
           path: ${{ env.MANIFEST_FILE }}
           sha256: "${{ needs.package.outputs.sbom-hash-code }}"
 
-      - name: Attach to release
+      - name: Compress SBOM file
+        id: compress
         shell: pwsh
         run: |
-          $release = "${{ github.ref_name }}"
-          $repo = "${{ github.repository }}"
-          $token = "${{ secrets.GITHUB_TOKEN }}"
           $file = "${{ env.MANIFEST_FILE }}"
           $uploadName = "${{ env.PACKAGE_NAME }}-SBOM.zip"
-
-          $url = "https://api.github.com/repos/$repo/releases/tags/$release"
-
-          $gh_headers = @{
-              "Accept"        = "application/vnd.github+json"
-              "Authorization" = "Bearer $token"
-          }
-
-          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers
-          $releaseId = $response.id
-
-          $url = "https://uploads.github.com/repos/$repo/releases/$releaseId/assets"
-
           Compress-Archive $file -DestinationPath $uploadName
-
-          $gh_headers["Content-Type"] = "application/octet"
-          Invoke-RestMethod -Method POST `
-              -Uri "$($url)?name=$($uploadName)" `
-              -Headers $gh_headers `
-              -InFile $uploadName
+          "uploadName=$uploadName" >> $env:GITHUB_OUTPUT
+        
+      - name: Attach to release
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 #v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: "./${{ steps.compress.outputs.uploadName }}"
+          asset_name: "${{ steps.compress.outputs.uploadName }}"
+          asset_content_type: application/octet
