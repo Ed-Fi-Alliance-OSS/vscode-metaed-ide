@@ -107,39 +107,19 @@ jobs:
       actions: read
       contents: write
     steps:
-      - name: Securely retrieve the package from artifacts
-        uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@main
-        with:
+     - name: Securely retrieve the package from artifacts
+       uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@main
+       with:
           name: vscode-metaed.vsix
           path: vscode-metaed.vsix
           sha256: "${{ needs.package.outputs.hash-code }}"
-
-      - name: Attach to release
-        shell: pwsh
-        run: |
-          $release = "${{ github.ref_name }}"
-          $repo = "${{ github.repository }}"
-          $token = "${{ env.GITHUB_TOKEN }}"
-          $uploadName = "vscode-metaed.vsix"
-
-          $url = "https://api.github.com/repos/$repo/releases/tags/$release"
-
-          $gh_headers = @{
-              "Accept"        = "application/vnd.github+json"
-              "Authorization" = "Bearer $token"
-          }
-
-          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers
-          $releaseId = $response.id
-
-          $url = "https://uploads.github.com/repos/$repo/releases/$releaseId/assets"
-
-          $gh_headers["Content-Type"] = "application/octet"
-          Invoke-RestMethod -Method POST `
-              -Uri "$($url)?name=$($uploadName)" `
-              -Headers $gh_headers `
-              -InFile $uploadName
-
+          
+     - name: Attach to release
+       uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 #v2.0.8
+       if: startsWith(github.ref, 'refs/tags/')
+       with:
+          files: vscode-metaed.vsix
+          token: ${{ env.GITHUB_TOKEN }}
 
   sbom-attach:
     name: Attach SBOM file
@@ -156,31 +136,18 @@ jobs:
           path: ${{ env.MANIFEST_FILE }}
           sha256: "${{ needs.package.outputs.sbom-hash-code }}"
 
-      - name: Attach to release
+      - name: Compress SBOM file
+        id: compress
         shell: pwsh
         run: |
-          $release = "${{ github.ref_name }}"
-          $repo = "${{ github.repository }}"
-          $token = "${{ secrets.GITHUB_TOKEN }}"
           $file = "${{ env.MANIFEST_FILE }}"
           $uploadName = "${{ env.PACKAGE_NAME }}-SBOM.zip"
-
-          $url = "https://api.github.com/repos/$repo/releases/tags/$release"
-
-          $gh_headers = @{
-              "Accept"        = "application/vnd.github+json"
-              "Authorization" = "Bearer $token"
-          }
-
-          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers
-          $releaseId = $response.id
-
-          $url = "https://uploads.github.com/repos/$repo/releases/$releaseId/assets"
-
           Compress-Archive $file -DestinationPath $uploadName
-
-          $gh_headers["Content-Type"] = "application/octet"
-          Invoke-RestMethod -Method POST `
-              -Uri "$($url)?name=$($uploadName)" `
-              -Headers $gh_headers `
-              -InFile $uploadName
+          "uploadName=$uploadName" >> $env:GITHUB_OUTPUT
+        
+      - name: Attach to release
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 #v2.0.8
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: "${{ steps.compress.outputs.uploadName }}"
+          token: ${{ env.GITHUB_TOKEN }}
