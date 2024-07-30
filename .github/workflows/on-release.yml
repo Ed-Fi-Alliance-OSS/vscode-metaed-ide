@@ -34,8 +34,9 @@ jobs:
         run: |
           file="vscode-metaed.vsix"
           tag="${{ github.ref_name }}"
+          asset_name="vscode-metaed.vsix"
 
-          url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
+          url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" --arg an "$asset_name" 'select(.tag_name==$t) | .assets[] | select(.name==$an) | .browser_download_url')
           curl -LO $url --fail
           if [ -s $file ]; then
             echo "File downloaded!"
