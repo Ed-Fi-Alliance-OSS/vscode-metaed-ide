@@ -26,7 +26,14 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } f
 import * as fs from 'fs';
 import { DeployResult } from '@edfi/metaed-odsapi-deploy';
 import { showErrorNotification, showInfoNotification, yieldToNextMacroTask } from './Utility';
-import { acceptedLicense, allianceMode, getOdsApiDeploymentDirectory, suppressDeleteOnDeploy } from './ExtensionSettings';
+import {
+  acceptedLicense,
+  allianceMode,
+  getOdsApiDeploymentDirectory,
+  suppressDeleteOnDeploy,
+  additionalMssqlScriptsDirectory,
+  additionalPostgresScriptsDirectory,
+} from './ExtensionSettings';
 import type { DeployParameters } from '../model/DeployParameters';
 import { createServerMessage } from './ServerMessageFactory';
 import type { ServerMessage } from '../model/ServerMessage';
@@ -156,6 +163,8 @@ async function addSubscriptions(context: ExtensionContext) {
           serverMessage,
           deployCore: allianceMode(),
           suppressDelete: suppressDeleteOnDeploy(),
+          additionalMssqlScriptsDirectory: additionalMssqlScriptsDirectory(),
+          additionalPostgresScriptsDirectory: additionalPostgresScriptsDirectory(),
         };
         await client.sendNotification('metaed/deploy', deployParameters);
         await showInfoNotification('Deploying MetaEd...');
