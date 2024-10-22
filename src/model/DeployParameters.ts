@@ -7,4 +7,6 @@ export type DeployParameters = {
   serverMessage: ServerMessage;
   deployCore: boolean;
   suppressDelete: boolean;
+  additionalMssqlScriptsDirectory?: string;
+  additionalPostgresScriptsDirectory?: string;
 };

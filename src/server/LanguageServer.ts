@@ -39,8 +39,21 @@ async function build({ metaEdConfiguration, dataStandardVersion }: ServerMessage
  * Set up and call the metaed-odsapi-deploy build process
  * @returns true if the deploy was successful
  */
-async function deploy({ serverMessage, deployCore, suppressDelete }: DeployParameters): Promise<DeployResult> {
-  return runDeployTasks(serverMessage.metaEdConfiguration, serverMessage.dataStandardVersion, deployCore, suppressDelete);
+async function deploy({
+  serverMessage,
+  deployCore,
+  suppressDelete,
+  additionalMssqlScriptsDirectory,
+  additionalPostgresScriptsDirectory,
+}: DeployParameters): Promise<DeployResult> {
+  return runDeployTasks(
+    serverMessage.metaEdConfiguration,
+    serverMessage.dataStandardVersion,
+    deployCore,
+    suppressDelete,
+    additionalMssqlScriptsDirectory,
+    additionalPostgresScriptsDirectory,
+  );
 }
 
 clientConnection.onNotification('metaed/build', (serverMessage: ServerMessage) => {

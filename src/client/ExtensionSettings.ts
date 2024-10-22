@@ -38,3 +38,11 @@ export function acceptedLicense(): boolean {
 export function allianceMode(): boolean {
   return getWorkspaceConfiguration().get('allianceMode') ?? false;
 }
+
+export function additionalMssqlScriptsDirectory(): string {
+  return getWorkspaceConfiguration().get('additionalMssqlScriptsDirectory') ?? '';
+}
+
+export function additionalPostgresScriptsDirectory(): string {
+  return getWorkspaceConfiguration().get('additionalPostgresScriptsDirectory') ?? '';
+}
