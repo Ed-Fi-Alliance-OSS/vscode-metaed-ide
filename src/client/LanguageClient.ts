@@ -37,7 +37,6 @@ let client: LanguageClient;
 let telemetryLogger: TelemetryLogger | null = null;
 
 const sendLintCommandToServer: () => Promise<void> = debounce(async () => {
- 
   const serverMessage: ServerMessage | undefined = await createServerMessage(client.outputChannel, {
     showUiNotifications: false,
   });
@@ -73,7 +72,6 @@ async function addSubscriptions(context: ExtensionContext) {
   context.subscriptions.push(
     commands.registerCommand('metaed.build', () => {
       (async () => {
-
         const serverMessage: ServerMessage | undefined = await createServerMessage(client.outputChannel);
         if (serverMessage == null) {
           await showErrorNotification('Nothing to build.');
