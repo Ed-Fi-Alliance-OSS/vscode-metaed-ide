@@ -111,32 +111,26 @@
 					"type": "string",
 					"default": ""
 				},
-				"metaed.acceptedLicense": {
-					"order": 3,
-					"markdownDescription": "Usage of the MetaEd IDE requires acceptance of the [Ed-Fi License Agreement](https://www.ed-fi.org/getting-started/license-ed-fi-technology). Check the box to accept the license terms.",
-					"type": "boolean",
-					"default": false
-				},
 				"metaed.suppressDeleteOnDeploy": {
-					"order": 4,
+					"order": 3,
 					"description": "Stop deployment from deleting the SupportingArtifacts API folder.  For advanced users only.",
 					"type": "boolean",
 					"default": false
 				},
 				"metaed.allianceMode": {
-					"order": 5,
+					"order": 4,
 					"description": "For Alliance users only, this makes core files editable. Non-Alliance users must leave this setting disabled to avoid dangerous and costly mistakes.",
 					"type": "boolean",
 					"default": false
 				},
 				"metaed.additionalMssqlScriptsDirectory": {
-					"order": 6,
+					"order": 5,
 					"description": "Full path to optional folder for post deploy MSSQL database scripts. The contents of this folder will be copied to /MsSql/Data/Ods. For advanced users only.",
 					"type": "string",
 					"default": ""
 				},
 				"metaed.additionalPostgresScriptsDirectory": {
-					"order": 7,
+					"order": 6,
 					"description": "Full path to optional folder for post deploy PostgreSql database scripts. The contents of this folder will be copied to /PgSql/Data/Ods. For advanced users only.",
 					"type": "string",
 					"default": ""
