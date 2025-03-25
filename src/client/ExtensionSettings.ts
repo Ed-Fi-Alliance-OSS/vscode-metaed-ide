@@ -31,6 +31,10 @@ export function telemetryConsent(): string {
   return getWorkspaceConfiguration().get('telemetryConsent') ?? '';
 }
 
+export function acceptedLicense(): boolean {
+  return getWorkspaceConfiguration().get('acceptedLicense') ?? false;
+}
+
 export function allianceMode(): boolean {
   return getWorkspaceConfiguration().get('allianceMode') ?? false;
 }
