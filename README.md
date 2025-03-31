@@ -1,5 +1,7 @@
 # MetaEd IDE
 
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide)
+
 ![MetaEd IDE: Ed-Fi Extensions Made
 Easy](https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/static/MetaEd-About-Background.png?raw=true)
 
