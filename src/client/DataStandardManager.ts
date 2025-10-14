@@ -17,10 +17,6 @@ const chmodrp = promisify(chmodr);
 
 // keys are ODS/API versions, values are corresponding DS version ranges supported
 const odsApiToDsVersionRange: Map<SemVer, SemVerRange> = new Map([
-  ['5.1.0', '3.2.0-c'],
-  ['5.2.0', '3.3.1-b'],
-  ['5.3.0', '3.3.1-b'],
-  ['5.4.0', '3.3.1-b'],
   ['6.1.0', '4.0.0'],
   ['6.2.0', '4.0.0'],
   ['7.1.0', '>=4.0.0'],
@@ -53,12 +49,6 @@ export function dsVersionRangeToModelProjectDirectory(dsVersionRange: SemVerRang
   let modelPath = '';
 
   switch (dsVersionRange) {
-    case '3.2.0-c':
-      modelPath = nodeModulesPath('ed-fi-model-3.2c');
-      break;
-    case '3.3.1-b':
-      modelPath = nodeModulesPath('ed-fi-model-3.3b');
-      break;
     case '4.0.0':
       modelPath = nodeModulesPath('ed-fi-model-4.0');
       break;
@@ -78,7 +68,7 @@ export type DsVersionAndOdsApiVersion = { dataStandardVersion: SemVerRange; odsA
  * Returns the Data Standard version range supported by the given ODS/API version
  */
 export function odsApiVersionSupportsRange(odsApiVersion: SemVerRange): SemVerRange {
-  return odsApiToDsVersionRange.get(odsApiVersion) ?? '3.2.0-c';
+  return odsApiToDsVersionRange.get(odsApiVersion) ?? '4.0.0';
 }
 
 /**
