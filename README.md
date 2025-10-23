@@ -76,6 +76,9 @@ settings:
 Please report support issues in [Ed-Fi Tracker](https://tracker.ed-fi.org).
 
 ## Release Notes
+### 4.6.0
+ODS/API 7.3 and Data Standard 6.0 support. Drops support for ODS/API and
+Data Standard versions no longer supported by the Ed-Fi Alliance.
 
 ### 4.4.0
 
