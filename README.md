@@ -8,7 +8,7 @@ Easy](https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/static/M
 ## About MetaEd
 
 MetaEd is a technology framework that uses an [Ed-Fi-aligned domain specific
-language](https://techdocs.ed-fi.org/x/kBSAAw) (DSL) to auto-generate software,
+language](https://docs.ed-fi.org/reference/metaed) (DSL) to auto-generate software,
 database, and Ed-Fi Data Standard artifacts.
 
 The Visual Studio extension supports MetaEd development by providing:
@@ -73,10 +73,12 @@ settings:
 
 ## Issues
 
-Please report support issues in [Ed-Fi Tracker](https://tracker.ed-fi.org).
+Please report support issues through the [Ed-Fi Community Hub](https://community.ed-fi.org).
 
 ## Release Notes
+
 ### 4.6.0
+
 ODS/API 7.3 and Data Standard 6.0 support. Drops support for ODS/API and
 Data Standard versions no longer supported by the Ed-Fi Alliance.
 
@@ -108,9 +110,13 @@ Includes missing plugins for changequery functionality.
 Supports MetaEd 4.0; first version on Visual Studio Code. For more details,
 see [What's New](https://techdocs.ed-fi.org/x/gBOAAw) in Tech Docs.
 
-## Legal
+## Legal Information
 
-Copyright © 2024, [Ed-Fi Alliance, LLC](https://www.ed-fi.org).
+Copyright (c) 2025 Ed-Fi Alliance, LLC and contributors.
 
-Please see [LICENSE.md](LICENSE.md) for full details of the Ed-Fi License
-Agreement.
+Licensed under the [Apache License, Version 2.0](./LICENSE) (the "License").
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
