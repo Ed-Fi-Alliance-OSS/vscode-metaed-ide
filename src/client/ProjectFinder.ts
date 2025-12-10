@@ -10,11 +10,25 @@ import fs from 'node:fs/promises';
 import path from 'path';
 import semver from 'semver';
 
-import { deriveNamespaceFromProjectName } from '@edfi/metaed-core';
 import { ProjectMetadata, newProjectMetadata } from '../model/ProjectMetadata';
 import { ProjectJsonFields } from '../model/ProjectJsonFields';
 import { WorkspaceProjects } from '../model/WorkspaceProjects';
 import { InvalidProject } from '../model/InvalidProject';
+
+function uppercaseThenAlphanumericOnly(aString: string): string | null {
+  const alphanumericMatches: string[] | null = aString.match(/[a-zA-Z0-9]+/g);
+  if (alphanumericMatches == null) return 'NoAlphanumericCharacters';
+
+  const alphanumericOnly = alphanumericMatches.join('');
+  if (!alphanumericOnly) return 'NoAlphanumericCharacters';
+
+  const leadingAlphaCharacter = /^[A-Z]/;
+  if (!leadingAlphaCharacter.test(alphanumericOnly)) return 'FirstCharacterNotUppercase';
+
+  return alphanumericOnly;
+}
+
+const deriveNamespaceFromProjectName = (projectName: string): string | null => uppercaseThenAlphanumericOnly(projectName);
 
 /**
  * Returns the MetaEd project metadata from the package.json file of a MetaEd project, or null if the file either
@@ -63,14 +77,24 @@ export async function findMetaEdProjects(): Promise<WorkspaceProjects> {
       continue;
     }
 
-    const namespaceName: string | null = deriveNamespaceFromProjectName(projectJsonMetadata.projectName);
-    if (namespaceName == null) {
-      invalidProjects.push({
-        folderPath,
-        reasonInvalid:
-          'metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only.',
-      });
-      continue;
+    const namespaceName: string | null = deriveNamespaceFromProjectName(projectJsonMetadata.projectName)?.trim() ?? null;
+    switch (namespaceName) {
+      case 'FirstCharacterNotUppercase':
+        invalidProjects.push({
+          folderPath,
+          reasonInvalid:
+            'metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only.',
+        });
+        continue;
+      case 'NoAlphanumericCharacters':
+        invalidProjects.push({
+          folderPath,
+          reasonInvalid: 'metaEdProject.projectName must contain at least one alphanumeric character.',
+        });
+        continue;
+
+      default:
+        break;
     }
 
     const projectVersion = projectJsonMetadata.projectVersion || '';
@@ -87,7 +111,7 @@ export async function findMetaEdProjects(): Promise<WorkspaceProjects> {
       ...newProjectMetadata(folderPath),
       projectName: projectJsonMetadata.projectName,
       projectVersion,
-      namespaceName,
+      namespaceName: namespaceName!,
       description: projectJsonMetadata.projectDescription,
       isExtensionProject: namespaceName !== 'EdFi',
       projectExtension: namespaceName === 'EdFi' ? '' : 'EXTENSION',

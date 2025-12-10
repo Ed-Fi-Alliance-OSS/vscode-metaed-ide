@@ -66,7 +66,30 @@ export async function createServerMessage(
     return undefined;
   }
 
-  if (invalidProjects.length !== 0) {
+  if (
+    invalidProjects.length !== 0 &&
+    invalidProjects.some(
+      (p) =>
+        p.reasonInvalid ===
+        'metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only.',
+    )
+  ) {
+    // metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only
+    await notifyError(
+      'metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only.',
+      outputChannel,
+      showUiNotifications,
+    );
+  }
+
+  if (
+    invalidProjects.length !== 0 &&
+    invalidProjects.some(
+      (p) =>
+        p.reasonInvalid ===
+        'Workspace folder does not have a package.json file with both metaEdProject.projectName and metaEdProject.projectVersion definitions.',
+    )
+  ) {
     // There are non-MetaEd projects in the workspace
     await notifyInfo(
       'There are non-MetaEd projects in the workspace. They will be ignored',
