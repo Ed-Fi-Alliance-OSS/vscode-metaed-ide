@@ -39,29 +39,35 @@ export async function lint(
 
   // eslint-disable-next-line no-restricted-syntax
   for (const failure of validationFailure) {
-    if (failure.fileMap != null) {
-      const fileUri = URI.file(failure.fileMap.fullPath);
-      if (!filesWithFailure.has(fileUri.toString())) {
-        filesWithFailure.set(fileUri.toString(), []);
-      }
-
-      const tokenLength: number = failure.sourceMap && failure.sourceMap.tokenText ? failure.sourceMap.tokenText.length : 0;
-      const adjustedLine: number = !failure.fileMap || failure.fileMap.lineNumber === 0 ? 0 : failure.fileMap.lineNumber - 1;
-      const characterPosition: number = failure.sourceMap ? failure.sourceMap.column : 0;
-
-      const diagnostic: Diagnostic = {
-        severity: failure.category === 'warning' ? DiagnosticSeverity.Warning : DiagnosticSeverity.Error,
-        range: {
-          start: { line: adjustedLine, character: characterPosition },
-          end: { line: adjustedLine, character: characterPosition + tokenLength },
-        },
-        message: failure.message,
-        source: 'MetaEd',
-      };
-
-      const fileWithFailureDiagnostics = filesWithFailure.get(fileUri.toString());
-      if (fileWithFailureDiagnostics != null) fileWithFailureDiagnostics.push(diagnostic);
+    // Log validation failures that don't have file mapping for debugging
+    if (failure.fileMap == null) {
+      connection.console.log(`${Date.now()}: Validation failure without file mapping - ${failure.message}`);
     }
+
+    // Use fileMap if available, otherwise fall back to a virtual URI for general failures
+    const fileUri =
+      failure.fileMap != null ? URI.file(failure.fileMap.fullPath) : URI.parse('metaed:Validation Errors', true);
+
+    if (!filesWithFailure.has(fileUri.toString())) {
+      filesWithFailure.set(fileUri.toString(), []);
+    }
+
+    const tokenLength: number = failure.sourceMap && failure.sourceMap.tokenText ? failure.sourceMap.tokenText.length : 0;
+    const adjustedLine: number = !failure.fileMap || failure.fileMap.lineNumber === 0 ? 0 : failure.fileMap.lineNumber - 1;
+    const characterPosition: number = failure.sourceMap ? failure.sourceMap.column : 0;
+
+    const diagnostic: Diagnostic = {
+      severity: failure.category === 'warning' ? DiagnosticSeverity.Warning : DiagnosticSeverity.Error,
+      range: {
+        start: { line: adjustedLine, character: characterPosition },
+        end: { line: adjustedLine, character: characterPosition + tokenLength },
+      },
+      message: failure.message,
+      source: 'MetaEd',
+    };
+
+    const fileWithFailureDiagnostics = filesWithFailure.get(fileUri.toString());
+    if (fileWithFailureDiagnostics != null) fileWithFailureDiagnostics.push(diagnostic);
   }
 
   // send failures
