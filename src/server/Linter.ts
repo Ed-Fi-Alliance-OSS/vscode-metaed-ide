@@ -11,6 +11,9 @@ import type { State } from '@edfi/metaed-core';
 import { defaultPlugins } from '@edfi/metaed-default-plugins';
 import { ServerMessage } from '../model/ServerMessage';
 
+// Virtual URI for validation errors that don't have a specific file location
+const VALIDATION_ERRORS_VIRTUAL_URI = 'metaed:Validation Errors';
+
 // Tracks which files have been marked with failures and sent to the client. Important for keeping the
 // server in sync with the Problems window
 let currentFilesWithFailures: string[] = [];
@@ -41,12 +44,12 @@ export async function lint(
   for (const failure of validationFailure) {
     // Log validation failures that don't have file mapping for debugging
     if (failure.fileMap == null) {
-      connection.console.log(`${Date.now()}: Validation failure without file mapping - ${failure.message}`);
+      connection.console.log(`${Date.now()}: Validation failure without file mapping - ${JSON.stringify(failure.message)}`);
     }
 
     // Use fileMap if available, otherwise fall back to a virtual URI for general failures
     const fileUri =
-      failure.fileMap != null ? URI.file(failure.fileMap.fullPath) : URI.parse('metaed:Validation Errors', true);
+      failure.fileMap != null ? URI.file(failure.fileMap.fullPath) : URI.parse(VALIDATION_ERRORS_VIRTUAL_URI, true);
 
     if (!filesWithFailure.has(fileUri.toString())) {
       filesWithFailure.set(fileUri.toString(), []);
