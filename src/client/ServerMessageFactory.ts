@@ -66,33 +66,46 @@ export async function createServerMessage(
     return undefined;
   }
 
-  if (
-    invalidProjects.length !== 0 &&
-    invalidProjects.some(
-      (p) =>
-        p.reasonInvalid ===
-        'metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only.',
-    )
-  ) {
-    // metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only
-    await notifyError(
+  // Handle specific validation errors
+  const uppercaseError = invalidProjects.find(
+    (p) =>
+      p.reasonInvalid ===
       'metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only.',
-      outputChannel,
-      showUiNotifications,
-    );
+  );
+
+  if (uppercaseError) {
+    await notifyError(uppercaseError.reasonInvalid, outputChannel, showUiNotifications);
   }
 
-  if (
-    invalidProjects.length !== 0 &&
-    invalidProjects.some(
-      (p) =>
-        p.reasonInvalid ===
-        'Workspace folder does not have a package.json file with both metaEdProject.projectName and metaEdProject.projectVersion definitions.',
-    )
-  ) {
-    // There are non-MetaEd projects in the workspace
+  // Handle specific validation errors
+  const alphanumericCharacterError = invalidProjects.find(
+    (p) => p.reasonInvalid === 'metaEdProject.projectName must contain at least one alphanumeric character.',
+  );
+
+  if (alphanumericCharacterError) {
+    await notifyError(alphanumericCharacterError.reasonInvalid, outputChannel, showUiNotifications);
+  }
+
+  const projectVersionError = invalidProjects.find(
+    (p) =>
+      p.reasonInvalid ===
+      'metaEdProject.projectVersion is not a valid version declaration. Version declarations must follow the semver.org standard.',
+  );
+
+  if (projectVersionError) {
+    await notifyError(projectVersionError.reasonInvalid, outputChannel, showUiNotifications);
+  }
+
+  // There are non-MetaEd projects in the workspace
+  const nonMetaEdProjectNotify = invalidProjects.find(
+    (p) =>
+      p.reasonInvalid ===
+      'Workspace folder does not have a package.json file with both metaEdProject.projectName and metaEdProject.projectVersion definitions.',
+  );
+
+  if (nonMetaEdProjectNotify) {
     await notifyInfo(
-      'There are non-MetaEd projects in the workspace. They will be ignored',
+      'There are non-MetaEd projects in the workspace.They will be ignored',
       outputChannel,
       showUiNotifications,
     );
