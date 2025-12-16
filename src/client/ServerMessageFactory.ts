@@ -57,9 +57,7 @@ export async function createServerMessage(
   }
 
   if (invalidProjects.length !== 0) {
-    await Promise.all(
-      invalidProjects.map(async (project) => notifyError(project.reasonInvalid, outputChannel, showUiNotifications)),
-    );
+    await notifyError(invalidProjects.map((p) => p.reasonInvalid).join('\n'), outputChannel, showUiNotifications);
     return undefined;
   }
 
