@@ -96,7 +96,7 @@ export async function createServerMessage(
 
     if (nonMetaEdProjectNotify) {
       await notifyInfo(
-        'There are non-MetaEd projects in the workspace.They will be ignored',
+        'There are non-MetaEd projects in the workspace. They will be ignored',
         outputChannel,
         showUiNotifications,
       );
