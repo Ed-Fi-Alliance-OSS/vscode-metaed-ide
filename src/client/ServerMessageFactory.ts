@@ -75,6 +75,7 @@ export async function createServerMessage(
 
   if (uppercaseError) {
     await notifyError(uppercaseError.reasonInvalid, outputChannel, showUiNotifications);
+    return undefined;
   }
 
   // Handle specific validation errors
@@ -84,6 +85,7 @@ export async function createServerMessage(
 
   if (alphanumericCharacterError) {
     await notifyError(alphanumericCharacterError.reasonInvalid, outputChannel, showUiNotifications);
+    return undefined;
   }
 
   const projectVersionError = invalidProjects.find(
@@ -94,6 +96,7 @@ export async function createServerMessage(
 
   if (projectVersionError) {
     await notifyError(projectVersionError.reasonInvalid, outputChannel, showUiNotifications);
+    return undefined;
   }
 
   // There are non-MetaEd projects in the workspace
