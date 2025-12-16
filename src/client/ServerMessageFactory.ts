@@ -15,7 +15,7 @@ import {
 } from './ExtensionSettings';
 import { WorkspaceProjects } from '../model/WorkspaceProjects';
 import { ServerMessage } from '../model/ServerMessage';
-import { showErrorNotification, showInfoNotification } from './Utility';
+import { showErrorNotification } from './Utility';
 import {
   bundledDsRootPath,
   odsApiVersionSupportsDsVersion,
@@ -38,16 +38,6 @@ async function notifyError(errorMessage: string, outputChannel: OutputChannel, s
 }
 
 /**
- * Log info message to console and UI (if UI notifications are requested)
- */
-async function notifyInfo(infoMessage: string, outputChannel: OutputChannel, showUiNotifications: boolean) {
-  if (showUiNotifications) {
-    await showInfoNotification(infoMessage);
-  }
-  outputChannel.appendLine(infoMessage);
-}
-
-/**
  * Creates a ServerMessage for lint/build/deploy from the VS Code workspace and settings
  */
 export async function createServerMessage(
@@ -67,40 +57,10 @@ export async function createServerMessage(
   }
 
   if (invalidProjects.length !== 0) {
-    // Handle specific validation error
-    const uppercaseError = invalidProjects.find(
-      (p) =>
-        p.reasonInvalid ===
-        'metaEdProject.projectName definition must begin with an uppercase character. All other characters must be alphanumeric only.',
+    await Promise.all(
+      invalidProjects.map(async (project) => notifyError(project.reasonInvalid, outputChannel, showUiNotifications)),
     );
-    if (uppercaseError) {
-      await notifyError(uppercaseError.reasonInvalid, outputChannel, showUiNotifications);
-      return undefined;
-    }
-    const projectVersionError = invalidProjects.find(
-      (p) =>
-        p.reasonInvalid ===
-        'metaEdProject.projectVersion is not a valid version declaration. Version declarations must follow the semver.org standard.',
-    );
-
-    if (projectVersionError) {
-      await notifyError(projectVersionError.reasonInvalid, outputChannel, showUiNotifications);
-      return undefined;
-    }
-    // There are non-MetaEd projects in the workspace
-    const nonMetaEdProjectNotify = invalidProjects.find(
-      (p) =>
-        p.reasonInvalid ===
-        'Workspace folder does not have a package.json file with both metaEdProject.projectName and metaEdProject.projectVersion definitions.',
-    );
-
-    if (nonMetaEdProjectNotify) {
-      await notifyInfo(
-        'There are non-MetaEd projects in the workspace. They will be ignored',
-        outputChannel,
-        showUiNotifications,
-      );
-    }
+    return undefined;
   }
 
   // Find all the data standard projects and their versions
