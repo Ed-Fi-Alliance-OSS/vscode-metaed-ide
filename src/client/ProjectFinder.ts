@@ -10,28 +10,12 @@ import fs from 'node:fs/promises';
 import path from 'path';
 import semver from 'semver';
 
+import { deriveNamespaceFromProjectName } from '@edfi/metaed-core';
 import { ProjectMetadata, newProjectMetadata } from '../model/ProjectMetadata';
 import { ProjectJsonFields } from '../model/ProjectJsonFields';
 import { WorkspaceProjects } from '../model/WorkspaceProjects';
 import { InvalidProject } from '../model/InvalidProject';
 
-function hasAlphanumericCharacters(aString: string): boolean {
-  const alphanumericMatches = aString.match(/[a-zA-Z0-9]+/g);
-  return alphanumericMatches != null && alphanumericMatches.length > 0;
-}
-
-function startsWithUppercase(aString: string): boolean {
-  const alphanumericMatches = aString.match(/[a-zA-Z0-9]+/g);
-  if (alphanumericMatches == null) return false;
-
-  const alphanumericOnly = alphanumericMatches.join('');
-  return /^[A-Z]/.test(alphanumericOnly);
-}
-
-function deriveNamespaceFromProjectName(projectName: string): string {
-  const alphanumericMatches = projectName.match(/[a-zA-Z0-9]+/g);
-  return alphanumericMatches ? alphanumericMatches.join('') : '';
-}
 /**
  * Returns the MetaEd project metadata from the package.json file of a MetaEd project, or null if the file either
  * does not exist or is not for a MetaEd project.
@@ -79,17 +63,8 @@ export async function findMetaEdProjects(): Promise<WorkspaceProjects> {
       continue;
     }
 
-    // Validate project name has alphanumeric characters
-    if (!hasAlphanumericCharacters(projectJsonMetadata.projectName)) {
-      invalidProjects.push({
-        folderPath,
-        reasonInvalid: 'metaEdProject.projectName must contain at least one alphanumeric character.',
-      });
-      continue;
-    }
-
-    // Validate project name starts with uppercase
-    if (!startsWithUppercase(projectJsonMetadata.projectName)) {
+    const namespaceName: string | null = deriveNamespaceFromProjectName(projectJsonMetadata.projectName);
+    if (namespaceName == null) {
       invalidProjects.push({
         folderPath,
         reasonInvalid:
@@ -107,9 +82,6 @@ export async function findMetaEdProjects(): Promise<WorkspaceProjects> {
       });
       continue;
     }
-
-    // Derive namespace name after validations pass
-    const namespaceName = deriveNamespaceFromProjectName(projectJsonMetadata.projectName);
 
     projectMetadatas.push({
       ...newProjectMetadata(folderPath),
