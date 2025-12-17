@@ -15,7 +15,7 @@ import {
 } from './ExtensionSettings';
 import { WorkspaceProjects } from '../model/WorkspaceProjects';
 import { ServerMessage } from '../model/ServerMessage';
-import { showErrorNotification, showInfoNotification } from './Utility';
+import { showErrorNotification } from './Utility';
 import {
   bundledDsRootPath,
   odsApiVersionSupportsDsVersion,
@@ -38,16 +38,6 @@ async function notifyError(errorMessage: string, outputChannel: OutputChannel, s
 }
 
 /**
- * Log info message to console and UI (if UI notifications are requested)
- */
-async function notifyInfo(infoMessage: string, outputChannel: OutputChannel, showUiNotifications: boolean) {
-  if (showUiNotifications) {
-    await showInfoNotification(infoMessage);
-  }
-  outputChannel.appendLine(infoMessage);
-}
-
-/**
  * Creates a ServerMessage for lint/build/deploy from the VS Code workspace and settings
  */
 export async function createServerMessage(
@@ -67,12 +57,8 @@ export async function createServerMessage(
   }
 
   if (invalidProjects.length !== 0) {
-    // There are non-MetaEd projects in the workspace
-    await notifyInfo(
-      'There are non-MetaEd projects in the workspace. They will be ignored',
-      outputChannel,
-      showUiNotifications,
-    );
+    await notifyError(invalidProjects.map((p) => p.reasonInvalid).join('\n'), outputChannel, showUiNotifications);
+    return undefined;
   }
 
   // Find all the data standard projects and their versions
