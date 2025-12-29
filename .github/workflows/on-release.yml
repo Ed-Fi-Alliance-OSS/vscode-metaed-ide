@@ -13,6 +13,9 @@ on:
 env:
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     name: Publish VSIX to Visual Studio Marketplace
@@ -28,7 +31,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Install vsce
-        run: npm install --global @vscode/vsce
+        run: npm install --global @vscode/vsce@v3.7.1
 
       - name: Retrieve VSIX from release
         run: |
@@ -52,6 +55,10 @@ jobs:
     name: Delete Unnecessary Pre-Releases
     needs: publish
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout the repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0

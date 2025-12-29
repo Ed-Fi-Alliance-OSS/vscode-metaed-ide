@@ -18,6 +18,9 @@ on:
       - "package-lock.json"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   scan-actions:
     name: Scan Actions
@@ -47,6 +50,9 @@ jobs:
   build:
     name: Build and Code Security
     runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
 
     steps:
       - name: Checkout repository
@@ -81,7 +87,7 @@ jobs:
         uses: github/codeql-action/analyze@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v4.31.0
 
       - name: Install vsce
-        run: npm install --global @vscode/vsce
+        run: npm install --global @vscode/vsce@v3.7.1
 
       - name: Build vsix package
         run: |
