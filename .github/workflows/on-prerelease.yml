@@ -103,7 +103,7 @@ jobs:
       contents: write
     steps:
      - name: Securely retrieve the package from artifacts
-       uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@5a775b367a56d5bd118a224a811bba288150a563  #v2.0.0
+       uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@v2.0.0  #v2.0.0
        with:
           name: vscode-metaed.vsix
           path: vscode-metaed.vsix
@@ -125,7 +125,7 @@ jobs:
       contents: write
     steps:
       - name: Download the SBOM
-        uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@5a775b367a56d5bd118a224a811bba288150a563 #v2.0.0
+        uses: Ed-Fi-Alliance-OSS/slsa-github-generator/.github/actions/secure-download-artifact@v2.0.0 #v2.0.0
         with:
           name: "${{ env.PACKAGE_NAME }}-SBOM"
           path: ${{ env.MANIFEST_FILE }}
