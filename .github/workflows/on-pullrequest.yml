@@ -19,21 +19,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
-  attestations: read
-  checks: read
-  deployments: read
-  discussions: read
-  issues: read
-  models: read
-  packages: read
-  pages: read
-  pull-requests: read
-  repository-projects: read
-  statuses: read
-  security-events: read
-  id-token: read
-  contents: read
+  read-all
 
 jobs:
   scan-actions:
