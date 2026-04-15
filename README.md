@@ -77,6 +77,10 @@ Please report support issues through the [Ed-Fi Community Hub](https://community
 
 ## Release Notes
 
+### 4.7.0
+
+Data Standard 6.1 support.
+
 ### 4.6.0
 
 ODS/API 7.3 and Data Standard 6.0 support. Drops support for ODS/API and
