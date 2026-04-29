@@ -14,22 +14,23 @@ well tested.
 
 To create a new release and publish to Visual Studio Marketplace:
 
-1. In GitHub, create a new release:
-   * _as a pre-release_
-   * Using a version number string prefixed with 'v' and corresponding to the
-     value in the `package.json` file.
-   * Example: `v1.0.0`
-   * Do not use pre-release type nomenclature when _intending_ to publish to the
-     Marketplace. Can label as pre-release if only intending for user to
-     download the VSIX from GitHub, not from the Marketplace.
-   * Use the change log button to auto-generate a change log.
-2. When ready to release to the Marketplace:
+1. Update the `version` value in `package.json`.
+   * The version string is used as the GitHub release tag and name.
+   * Do not prefix the version with `v`.
+   * Example: `1.0.0`
+2. Merge the version change to `main`.
+   * The `On Merge to Main or Releasable Tag` workflow creates a GitHub
+     pre-release from the `package.json` version.
+   * The `On Pre-Release` workflow builds the VSIX package and attaches it to
+     the pre-release.
+3. When ready to release to the Marketplace:
    * Edit the existing release, unchecking the "pre-release" option.
 
-What happens? With a pre-release, a GitHub Action runs to build a VSIX package
-and attaches it to the pre-release. When change away from pre-release, a
-different Action workflow fires off, downloading the VSIX attachment and
-publishing it to the Marketplace.
+What happens? When a change is merged to `main`, a GitHub Action creates a
+pre-release using the package version. With that pre-release, a GitHub Action
+runs to build a VSIX package and attaches it to the pre-release. When the
+release flag is changed from pre-release to release, a different Action workflow
+fires off, downloading the VSIX attachment and publishing it to the Marketplace.
 
 ## Optimization
 
