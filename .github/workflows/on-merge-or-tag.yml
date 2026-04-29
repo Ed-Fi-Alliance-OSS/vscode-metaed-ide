@@ -3,13 +3,14 @@
 # The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 # See the LICENSE and NOTICES files in the project root for more information.
 
-name: On Merge to Main or Releasable Tag
+name: Create Pre-Release
 on:
   push:
     branches:
       - main
-    tags:
-      - "v*.*.*"
+    paths:
+      - "package.json"
+      - "package-lock.json"
 
 env:
   API_URL: https://api.github.com/repos/${{ github.repository }}
@@ -28,10 +29,34 @@ jobs:
     steps:
       - name: Checkout the Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Check package version changed
+        id: version-check
+        run: |
+          $currentVersion = (Get-Content package.json | ConvertFrom-Json).version
+          $previousVersion = ""
+
+          if ("${{ github.event.before }}" -notmatch "^0+$") {
+            $previousPackageJson = git show "${{ github.event.before }}:package.json"
+            $previousVersion = ($previousPackageJson | ConvertFrom-Json).version
+          }
+
+          "version=$currentVersion" >> $env:GITHUB_OUTPUT
+
+          if ($previousVersion -eq $currentVersion) {
+            "Package version did not change; skipping pre-release." | Write-Output
+            "version-changed=false" >> $env:GITHUB_OUTPUT
+          } else {
+            "Package version changed from '$previousVersion' to '$currentVersion'." | Write-Output
+            "version-changed=true" >> $env:GITHUB_OUTPUT
+          }
 
       - name: Create vscode-metaed Pre-Release
+        if: steps.version-check.outputs.version-changed == 'true'
         run: |
-          $version = (npm version | ConvertFrom-Json).'vscode-metaed-ide'
+          $version = "${{ steps.version-check.outputs.version }}"
 
           $body = @{
             tag_name = $version

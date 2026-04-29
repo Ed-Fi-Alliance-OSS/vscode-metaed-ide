@@ -19,8 +19,10 @@ To create a new release and publish to Visual Studio Marketplace:
    * Do not prefix the version with `v`.
    * Example: `1.0.0`
 2. Merge the version change to `main`.
-   * The `On Merge to Main or Releasable Tag` workflow creates a GitHub
-     pre-release from the `package.json` version.
+   * The `Create Pre-Release` workflow creates a GitHub pre-release from the
+     `package.json` version.
+   * The workflow only runs when package metadata changes, and skips release
+     creation if the `package.json` version did not change.
    * The `On Pre-Release` workflow builds the VSIX package and attaches it to
      the pre-release.
 3. When ready to release to the Marketplace:
