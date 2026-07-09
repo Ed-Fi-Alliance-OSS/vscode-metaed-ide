@@ -1,7 +1,7 @@
 ---
 name: deploy-smoke
 description: "Interactive ODS/API deploy smoke test protocol: verify deploys to 6.x/7.x targets through the real VS Code extension using locally built packages. Claude drives setup and disk verification; the user clicks Build/Deploy in the Extension Development Host."
-argument-hint: "[6x|7x|tpdm|all]"
+argument-hint: "[6x|7x|tpdm|extended|all]"
 allowed-tools: ["Bash", "PowerShell", "Glob", "Grep", "Read", "Write", "Edit"]
 ---
 
@@ -9,13 +9,14 @@ allowed-tools: ["Bash", "PowerShell", "Glob", "Grep", "Read", "Write", "Edit"]
 
 Interactive smoke test of MetaEd deploy behavior through the real `vscode-metaed-ide` extension,
 wired to the locally built packages. First used for METAED-1665 (6.x deploy silently no-oping);
-see `METAED-1665.md` for the original run and results.
+the original run and results are recorded on that Jira ticket.
 
 **Division of labor:** Claude cannot click inside the Extension Development Host. Claude does
 pre-flight, launches windows, verifies results on disk, and records outcomes. The user runs
 `MetaEd: Build` and `MetaEd: Deploy` (Ctrl+Shift+P) and reports the notifications.
 
-`$ARGUMENTS`: which matrix rows to run — `6x` (S1/S4/S2), `7x` (S3), `tpdm` (S15), or `all` (default).
+`$ARGUMENTS`: which matrix rows to run — `6x` (S1/S4/S2), `7x` (S3), `tpdm` (S15), `extended`
+(S5–S14, non-blocking editor scenarios), or `all` (default: all blocking rows; does NOT include `extended`).
 
 ## Phase 0 — Preconditions (Claude, before involving the user)
 
@@ -113,8 +114,25 @@ User: Build (TPDM is large), then Deploy. Claude verifies:
 `EdFi.Ods.Extensions.TPDM\Artifacts\{Metadata, MsSql, PgSql, Schemas}` populated, `odsApiVersion: "6.1"`.
 
 ### Extended (non-blocking, optional): S5–S14
-Target switching, DS/ODS mismatch errors, garbage input, validation errors, license gating, missing
-deploy dir, core-file edit protection, deleted-reference errors — see the matrix in `METAED-1665.md`.
+
+Editor-level scenarios beyond the deploy matrix. Extra one-off setup beyond Phase 0b: S6 needs a
+workspace pairing an incompatible DS model with a 6.x target (e.g. `smoke-6x-mismatch.code-workspace`,
+ed-fi-model-5.0 + target 6.1); S13 needs the bundled model itself as a workspace folder
+(`smoke-6x-bundled.code-workspace`) — read-only protection applies only under the extension's
+`node_modules/@edfi`, never to the Phase 0b model copies.
+
+| # | Area | Test | Expected |
+| --- | --- | --- | --- |
+| S5 | ODS target switching | Switch `metaed.targetOdsApiVersion` 6.1 → 7.3 → 6.1 (DS 4.0 workspace), building each time; Deploy once on the final 6.1 pass | Build succeeds each time — verify each via `odsApiVersion` in build output (Phase 1 step 4). Note: with DS 4.0, Interchange/XSD still generate at target 7.3 — artifact-set differences track DS version, not target |
+| S6 | DS/ODS mismatch | Build an incompatible pairing (e.g. DS 5.0 project, target 6.1) | Immediate compatibility error notification ("ODS/API version 6.1 ... requires data standard project ..."); no crash, no build |
+| S7 | DS version switching | Build the same extension against ed-fi-model-4.0 (target 6.1), then ed-fi-model-6.0 (target 7.3) — ONE-WINDOW RULE | Both build successfully; DS 6.0 artifact set has no Interchange/XSD |
+| S8 | Garbage in a file | Paste invalid text into a `.metaed` file in the extension project | Squiggles + Problems entries with exact line/col ("mismatched input ..."); revert clears them |
+| S9 | Validation errors | Remove `documentation`, remove identity, reference a nonexistent entity, duplicate a property name | A distinct parser/validator message in Problems for each |
+| S10 | Simple extension build | Extension with one DomainEntity + one Descriptor + one Choice; Build at 6.1 | Build success; `MetaEdOutput/<Extension>/{ApiMetadata, ApiSchema, Database, Interchange, XSD}` generated |
+| S11 | License gating | Deploy with `metaed.acceptedLicense` false | "You must first accept the Ed-Fi License Agreement" message; nothing deployed |
+| S12 | Missing deploy dir | Deploy with `metaed.odsApiDeploymentDirectory` empty | "To deploy, set Ods Api Deployment Directory under File -> Preferences -> Settings." (`LanguageClient.ts:125` — wording differs from the older QA spreadsheet); nothing deployed |
+| S13 | Core file edit protection | With Alliance Mode off, edit a bundled core DS file and save | Intended: warning with override prompt on save. KNOWN BUG [METAED-1670] (found 2026-07-08): `ensureBundledDsReadOnly()` sets no read-only flag — case-sensitive path check at `DataStandardManager.ts:94` vs VS Code's lowercase drive letter — so the save currently succeeds silently. Don't re-file; retest once METAED-1670 is fixed |
+| S14 | Delete referenced file | Delete a domain entity file that another file references; Build | Build fails; reference errors in Problems at exact line/col; restoring the file clears them |
 
 ## Known benign observations (do not flag as failures)
 
@@ -127,5 +145,23 @@ deploy dir, core-file edit protection, deleted-reference errors — see the matr
 ## Recording
 
 Record each result (pass/fail, date, evidence one-liner) in the ticket's plan file results table as it
-completes, and update the ticket task JSON if one exists. When the run ends, remind about reverting the
-vscode-metaed-ide wiring (Phase 0a step 6).
+completes, and update the ticket task JSON if one exists.
+
+## Final report (last step, always)
+
+When the run ends, write a standalone results report: `MetaEd-test-result-<month>-<year>.md`
+(e.g. `MetaEd-test-result-07-2026.md`) next to the ticket's plan file (or in the working directory
+if there is no ticket). Its destination is the Jira ticket as an attachment — it is NEVER committed
+to this repo, so keep it out of any commit and remind the user to attach it when the run ends.
+It must contain:
+
+- **Run context:** date, `$ARGUMENTS` requested, MetaEd package version / tarball set
+  (e.g. `4.7.1-dev.8`), vscode-metaed-ide commit, and the DS model ↔ target pairings used.
+- **Results table:** one row per scenario in the requested set — ID, area, result
+  (Pass / Fail / Blocked / Skipped), date, evidence one-liner (file counts, paths, `odsApiVersion`
+  checks — not just the notification text). Scenarios not run appear as Skipped with the reason;
+  never silently omit a row.
+- **Bugs found:** links to any tickets filed during the run (per S13's METAED-1670 precedent), and
+  which known-benign observations were triggered so they aren't re-investigated later.
+- **Cleanup status:** confirm the vscode-metaed-ide wiring was reverted (Phase 0a step 6) — if it
+  wasn't, say so explicitly and remind the user before ending the run.
