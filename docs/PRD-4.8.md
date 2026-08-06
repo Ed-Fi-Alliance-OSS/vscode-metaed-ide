@@ -23,7 +23,7 @@ generation logic - it is a thin client/server shell that packages the
 exposes their capabilities through VS Code's UI, commands, and Language Server
 Protocol (LSP) diagnostics.
 
-It serves two  audiences: the Ed-Fi Alliance's own Data Standard core team
+It serves two audiences: the Ed-Fi Alliance's own Data Standard core team
 (authoring the base Ed-Fi model) and community/vendor developers who author
 **extension** projects on top of the core Data Standard for their own API
 implementations.
@@ -165,8 +165,9 @@ implementations.
 ### Deploy (FR-DEPLOY)
 
 - **FR-DEPLOY-1**: The extension SHALL expose a `metaed.deploy` command,
-  available from the editor title-bar and command palette, that runs a build
-  followed by `runDeployTasks` from `@edfi/metaed-odsapi-deploy`.
+  available from the editor title-bar (for `.metaed` files) and the command
+  palette, that runs a build followed by `runDeployTasks` from
+  `@edfi/metaed-odsapi-deploy`.
 - **FR-DEPLOY-2**: Deploy SHALL be blocked with an error notification if the
   Ed-Fi license has not been accepted, if `metaed.odsApiDeploymentDirectory` is
   unset or not a valid directory, or if that directory does not contain both an
@@ -341,10 +342,13 @@ and require product/engineering sign-off before being treated as requirements.
   statically-imported client/server code while leaving dynamically-loaded
   `@edfi/metaed-plugin-*` packages unbundled) to reduce the ~13 MB VSIX size
   without breaking dynamic plugin loading.
-- PR-2 (SHOULD): Reconcile the `telemetryConsent` setting - either implement and
-  declare it in `package.json` `contributes.configuration` to match the README's
-  documented behavior and the existing `ExtensionSettings.ts` accessor, or
-  remove the stale documentation/code if telemetry consent is no longer planned.
+- PR-2 (SHOULD): Remove the stale `telemetryConsent` code - the `telemetryConsent()`
+  accessor in `ExtensionSettings.ts` and the unused `TelemetryLogger` plumbing in
+  `LanguageClient.ts` reference a setting that was never declared in `package.json`
+  `contributes.configuration`; its README documentation was removed as stale
+  (README no longer describes a "Telemetry Consent" setting). Delete the dead
+  code, or reinstate the setting (with a `package.json` declaration and
+  documentation) if a telemetry feature is still planned.
 - PR-3 (MAY): Add lightweight automated smoke tests (e.g., headless VS Code
   extension tests) for the client-side gating logic (license/project/version
   checks in `ServerMessageFactory.ts` and the `metaed.build`/`metaed.deploy`
