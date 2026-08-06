@@ -29,10 +29,6 @@ export function getTargetOdsApiVersionSemver(): SemVer {
   return (semver.coerce(targetOdsApiSemVer) || '').toString();
 }
 
-export function telemetryConsent(): string {
-  return getWorkspaceConfiguration().get('telemetryConsent') ?? '';
-}
-
 export function acceptedLicense(): boolean {
   return getWorkspaceConfiguration().get('acceptedLicense') ?? false;
 }
