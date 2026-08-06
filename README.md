@@ -61,10 +61,6 @@ settings:
   then make sure to include path separating character at the end(C:\, D:\). 
 * **Suppress Delete on Deploy**: Stop deployment from deleting the
   SupportingArtifacts API folder. For advanced users only.
-* **Telemetry Consent**: Select whether you are willing to submit anonymous
-  usage information to the Ed-Fi Alliance servers. Broadly, we send things like
-  performance metrics and exceptions, allowing us to more easily triage any
-  bugs encountered in the field.
 * **Accepted License**: Usage of the MetaEd IDE requires acceptance of the
   Ed-Fi License agreement. Check the box to accept the license terms.
 * **Alliance Mode**: For Alliance users only, this makes core files editable.
