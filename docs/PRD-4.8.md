@@ -133,7 +133,12 @@ implementations.
   automatically on: active editor change to a `.metaed` file, text changes to an
   open `.metaed` document, and closing of a `.metaed` document.
 - **FR-LINT-3**: The extension SHALL expose a `metaed.lint` command for manually
-  triggering a lint pass.
+  triggering a lint pass. Unlike `metaed.build`/`metaed.deploy`/`metaed.crash`,
+  this command is intentionally not declared in `package.json`
+  `contributes.commands` and has no title-bar icon or Command Palette entry -
+  since linting already runs automatically on document changes (FR-LINT-2), a
+  discoverable manual trigger is not needed; the command remains reachable via
+  a user-defined keybinding or programmatically.
 - **FR-LINT-4**: The extension SHALL run an initial lint on activation if a
   `.metaed` file is already the active editor, and again whenever the
   license-acceptance setting changes to accepted.
