@@ -20,7 +20,6 @@ import {
   Range,
   ConfigurationChangeEvent,
   WorkspaceFoldersChangeEvent,
-  TelemetryLogger,
 } from 'vscode';
 import path from 'path';
 import debounce from 'p-debounce';
@@ -42,8 +41,6 @@ import type { ServerMessage } from '../model/ServerMessage';
 import { bundledDsRootPath, ensureBundledDsReadOnly, isBundledDataStandardProjectInWorkspace } from './DataStandardManager';
 
 let client: LanguageClient;
-// @ts-ignore - telemetryLogger never read, but is being used by VS Code
-let telemetryLogger: TelemetryLogger | null = null;
 const acceptedLicenseDiagnosticCollection: DiagnosticCollection = languages.createDiagnosticCollection('acceptedLicense');
 
 const sendLintCommandToServer: () => Promise<void> = debounce(async () => {
@@ -391,7 +388,6 @@ export async function activate(context: ExtensionContext) {
  * Extension lifecycle function invoked by VS Code to deactivate extension
  */
 export function deactivate(): Promise<void> | undefined {
-  telemetryLogger = null;
   if (!client) {
     return undefined;
   }
