@@ -10,6 +10,26 @@ Unit tests for VS Code integration were not deemed worth the effort in this
 situation. All of the MetaEd logic is embedded in MetaEd packages that _are_
 well tested.
 
+## Dependency auditing
+
+Run `npm audit fix`, then `npm run test:lint` and `npm run package` to
+verify dependency updates.
+
+The `@azure/identity` override selects MSAL Node 7.1.2 or later to fix
+[GHSA-xcx6-jx8p-x3h5](https://github.com/advisories/GHSA-xcx6-jx8p-x3h5).
+Azure Identity 4.14.0 still requests MSAL Node 6.x. MSAL Node 7 removes the
+interactive authentication `responseMode` option, which Azure Identity 4.14.0
+does not pass. Remove the override when Azure Identity requests a patched
+MSAL Node version itself.
+
+As of October 29, 2026, `deepmerge` 4.3.1, pulled in by
+`@edfi/metaed-core` 4.8.0, has an unpatched low-severity advisory:
+[GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4).
+Its dependent MetaEd packages also appear in the audit report. The suggested
+`npm audit fix --force` downgrades MetaEd to 4.0.0; it does not patch the
+current engine. Keep the MetaEd packages in sync and consume an upstream
+fix when one is available.
+
 ## Release
 
 To create a new release and publish to Visual Studio Marketplace:
