@@ -74,5 +74,4 @@ MetaEd-js dependency bump that touches deploy behavior.
 
 - The VSIX cannot be bundled/minified: MetaEd loads plugin packages dynamically, so tree-shaking
   breaks it (see docs/DEVELOPMENT.md).
-- Node 20 is what CI uses; TypeScript is pinned old (4.8) along with the airbnb ESLint stack —
-  expect older syntax limits.
+
