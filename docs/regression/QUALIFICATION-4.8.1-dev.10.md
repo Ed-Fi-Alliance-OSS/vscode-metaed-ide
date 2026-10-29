@@ -93,3 +93,23 @@ N1, empty/missing/multiple-DS and malformed-project variants, and deployment-pat
 
 All automated fixture mutations were restored. Only the dependency/version files and this report
 were changed in the checkout. No extension installation, publication, commit, or push was performed.
+
+## A16 fix verification — 2026-10-29
+
+The results above describe the original qualification. A subsequent IDE fix now stops the
+deploy handler when its build fails, sends an explicit unsuccessful `metaed/deployComplete`
+with a failure message, and returns before invoking deployment tasks. Previously the handler
+reported build failure but unconditionally deployed the previous successful build's artifacts.
+
+All five A16 transport subcases pass on both P1 and P3 with the installed `4.8.1-dev.10`
+packages, and again with MetaEd-js feature branch `fix/invalid-common-relational-processing`
+at `70cea2c4a3573fc7d570911c0429f36da110fc6c`. The feature-branch run redirects MetaEd package
+imports to TypeScript sources; it does not certify a published package. Invalid deploy leaves
+all 30 P1 and 28 P3 target files unchanged in both bytes and timestamps. Valid lint/build/deploy
+and invalid-build notifications also pass; fixtures were restored.
+
+Evidence: `/tmp/metaed-a16-fix-20261029` (installed packages) and
+`/tmp/metaed-a16-fix-feature-20261029` (feature-branch sources), in their per-pair
+`results/*-transport.json`, notification logs, and before/after deployment manifests.
+`npm run test:lint` and `npm run package` passed. This targeted verification resolves the two
+A16 failures; it does not rerun the full routine matrix or supply the blocked IDE visual evidence.

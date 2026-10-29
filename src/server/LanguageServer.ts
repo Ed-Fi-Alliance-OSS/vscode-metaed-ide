@@ -78,6 +78,15 @@ clientConnection.onNotification('metaed/deploy', (deployParams: DeployParameters
     clientConnection.console.log(`${Date.now()}: Server sending build complete notification to client`);
     await clientConnection.sendNotification('metaed/buildComplete', buildSuccess);
 
+    if (!buildSuccess) {
+      const deployResult: DeployResult = {
+        success: false,
+        failureMessage: 'Build failed. Deployment was not attempted. See Problems window.',
+      };
+      await clientConnection.sendNotification('metaed/deployComplete', deployResult);
+      return;
+    }
+
     const deployResult: DeployResult = await deploy(deployParams);
 
     clientConnection.console.log(`${Date.now()}: Server sending deploy complete notification to client`);
