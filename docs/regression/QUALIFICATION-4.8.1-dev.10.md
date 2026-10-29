@@ -113,3 +113,42 @@ Evidence: `/tmp/metaed-a16-fix-20261029` (installed packages) and
 `results/*-transport.json`, notification logs, and before/after deployment manifests.
 `npm run test:lint` and `npm run package` passed. This targeted verification resolves the two
 A16 failures; it does not rerun the full routine matrix or supply the blocked IDE visual evidence.
+
+## A07 domain-member warning verification — 2026-10-29
+
+The original missing-domain-member result above remains the result for published `4.8.1-dev.10`.
+The root cause is a disabled validator: `DomainEntityDomainItemMustMatchTopLevelEntity` was
+commented out of the unified plugin's imports and registration in commit `06b98293d3` (2017),
+pending the model correction referenced by METAED-697. Its direct unit tests did not exercise
+plugin registration.
+
+MetaEd-js branch `fix/invalid-common-relational-processing`, commit
+`024e26b7a898f2624cf13452a88d506476c4212a`, now registers that validator with warning severity.
+A07 now requires a warning and successful build for an unresolved domain entity member;
+association and interchange reference mutations still require errors. Warning severity preserves
+build compatibility with the bundled DS6.1 `TeachingAndLearning` domain, whose
+`StudentEvaluationElement` and `StudentEvaluationObjective` members are declared as domain
+entities although their definitions are commons. Neither bundled models nor IDE dependencies
+were changed. Unresolved members remain absent from the resolved domain membership.
+
+Targeted P3 verification used copied, unchanged DS6.1 models, fresh engine state and output for
+each build, the default plugins from feature-branch TypeScript sources, and the real compiled IDE
+linter in one session. No validator injection or severity override was used:
+
+| Sample state | Build | Build diagnostics | IDE diagnostics |
+| --- | --- | --- | --- |
+| Valid | Success; fresh artifacts | Two baseline DS warnings | Two baseline DS warnings; none for QaDomain |
+| QaDomain references MissingRecord | Success; fresh artifacts | Baseline warnings plus the missing-member warning | Warning on `Domain/QaDomain.metaed`, line 3, columns 17–29 |
+| QaRecord restored | Success; fresh artifacts | Two baseline DS warnings | Empty diagnostic array sent for QaDomain; baseline warnings remain |
+
+All three builds and linter calls completed without plugin exceptions or logged errors. The
+unified plugin's 139 test suites passed (1,226 tests, 410 snapshots), including the missing-member
+test now exercising the registered validators. Package-level TypeScript and ESLint checks passed.
+IDE `npm run test:lint` and `npm run package` passed, and VSIX content checks passed; that VSIX
+still contains the published `4.8.1-dev.10` dependencies, not this unpublished engine change.
+
+Evidence: `/tmp/metaed-a07-warning-fix-20261029`, including `probe.cjs`, `source-preload.cjs`,
+`results.json`, per-build artifact manifests, test/lint/package logs, and `vsix.json`. Fixture
+mutations were restored. This resolves the targeted A07 domain-member failure on the feature
+branch under the revised warning contract. It does not certify a published package, rerun the
+full routine matrix, resolve the other original engine failures, or supply IDE visual evidence.
