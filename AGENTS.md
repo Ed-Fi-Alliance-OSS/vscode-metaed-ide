@@ -62,6 +62,12 @@ auto-creates a GitHub pre-release with the VSIX attached; flipping the release o
 publishes it to the Visual Studio Marketplace. Sync PRs look like #77 (bump deps + version to a
 dev prerelease); release PRs look like #78 (bump everything to the release version).
 
+Before release, run the [regression plan](docs/regression/PLAN.md) using its release coverage,
+the [agent instructions](docs/regression/AGENT.md), and the
+[visual testing checklist](docs/regression/VISUAL.md). Record results and required IDE visual
+evidence; report blocked or skipped checks explicitly. Complete public Marketplace/update
+checks after publication, as specified in the plan.
+
 PR titles reference a Jira ticket: `[METAED-XXXX] Description`.
 
 ## Deploy smoke testing

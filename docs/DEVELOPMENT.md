@@ -10,6 +10,11 @@ Unit tests for VS Code integration were not deemed worth the effort in this
 situation. All of the MetaEd logic is embedded in MetaEd packages that _are_
 well tested.
 
+For checkout and dependency regression testing, use the
+[regression plan](regression/PLAN.md), [agent instructions](regression/AGENT.md), and
+[visual testing checklist](regression/VISUAL.md). These separate engine/artifact checks from
+IDE behavior that requires screenshots or recordings; they do not introduce a unit-test suite.
+
 ## Dependency auditing
 
 Run `npm audit fix`, then `npm run test:lint` and `npm run package` to
