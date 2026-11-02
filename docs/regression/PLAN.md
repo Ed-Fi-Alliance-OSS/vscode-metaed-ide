@@ -50,8 +50,10 @@ A11 on P3; A13 on P1 and P4; A14–A16 on P1 and P3. V rows specify their pairs.
 N1 is a client check in V04, not a test of a direct engine call bypassing compatibility checks.
 
 For a release or compatibility-map change, expand build/deploy coverage to all supported
-pairings: DS 4.0 with targets 6.1/6.2, and each bundled DS (4.0, 5.0, 5.1, 5.2, 6.0, 6.1)
-with 7.1/7.2/7.3. Also reject each non-4.0 bundled DS with 6.1/6.2 in the client. Reconcile
+pairings: DS 4.0 with targets 6.1/6.2, each bundled DS (4.0, 5.0, 5.1, 5.2, 6.0, 6.1)
+with 7.1/7.2/7.3, and DS 5.2/6.0/6.1 with target 8.1. Also reject each non-4.0 bundled DS
+with 6.1/6.2 and DS 4.0/5.0/5.1 with 8.1 in the client. For incompatible 8.1 pairings,
+verify the error recommends the bundled `ed-fi-model-6.1` directory. Reconcile
 this list with the checkout before running. Routine coverage does not certify this full matrix.
 Release validation also includes V13 and X04/V14 once the release is public. Include V12 for
 Windows/Excel coverage, X01 when SQL generation changes, and X02 when qualifying ODS deployment.

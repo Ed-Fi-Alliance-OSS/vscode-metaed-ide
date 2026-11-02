@@ -92,7 +92,7 @@
 			"properties": {
 				"metaed.targetOdsApiVersion": {
 					"order": 1,
-					"description": "The target Ed-Fi ODS/API version",
+					"description": "The target Ed-Fi API version",
 					"type": "string",
 					"default": "7.3",
 					"enum": [
@@ -100,7 +100,8 @@
 						"6.2",
 						"7.1",
 						"7.2",
-						"7.3"
+						"7.3",
+						"8.1"
 					]
 				},
 				"metaed.odsApiDeploymentDirectory": {
@@ -183,7 +184,6 @@
 		"@edfi/metaed-plugin-edfi-xsd": "4.9.0",
 		"chmodr": "^1.2.0",
 		"p-debounce": "2.1.0",
-		"ramda": "^0.28.0",
 		"semver": "^5.7.2",
 		"tmp-promise": "^3.0.3",
 		"vscode-languageclient": "^9.0.0",

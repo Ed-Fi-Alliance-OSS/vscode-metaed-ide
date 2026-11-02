@@ -9,7 +9,6 @@ import { promisify } from 'node:util';
 import { Extension, extensions, window, workspace } from 'vscode';
 import chmodr from 'chmodr';
 import semver from 'semver';
-import * as R from 'ramda';
 import { SemVer } from '@edfi/metaed-core';
 
 export type SemVerRange = string;
@@ -24,12 +23,19 @@ const odsApiToDsVersionRange: Map<SemVer, SemVerRange> = new Map([
   ['7.1.0', '>=4.0.0'],
   ['7.2.0', '>=4.0.0'],
   ['7.3.0', '>=4.0.0'],
+  ['8.1.0', '>=5.2.0'],
 ]);
+
+let cachedBundledDsRootPath: string | undefined;
 
 /**
  * Finds the root directory path for the bundled Data Standard models.
  */
-export const bundledDsRootPath: () => string = R.memoizeWith(R.identity, () => {
+export function bundledDsRootPath(): string {
+  if (cachedBundledDsRootPath !== undefined) {
+    return cachedBundledDsRootPath;
+  }
+
   const metaedExtension: Extension<void> | undefined = extensions.getExtension('Ed-FiAlliance.vscode-metaed-ide');
   if (metaedExtension == null) {
     // eslint-disable-next-line no-void
@@ -37,8 +43,9 @@ export const bundledDsRootPath: () => string = R.memoizeWith(R.identity, () => {
     return '';
   }
 
-  return path.join(metaedExtension.extensionPath, 'node_modules', '@edfi');
-});
+  cachedBundledDsRootPath = path.join(metaedExtension.extensionPath, 'node_modules', '@edfi');
+  return cachedBundledDsRootPath;
+}
 
 function nodeModulesPath(moduleName: string) {
   return path.join(bundledDsRootPath(), moduleName);
@@ -55,6 +62,7 @@ export function dsVersionRangeToModelProjectDirectory(dsVersionRange: SemVerRang
       modelPath = nodeModulesPath('ed-fi-model-4.0');
       break;
     case '>=4.0.0':
+    case '>=5.2.0':
       modelPath = nodeModulesPath('ed-fi-model-6.1');
       break;
     default:
@@ -76,7 +84,7 @@ export function odsApiVersionSupportsRange(odsApiVersion: SemVerRange): SemVerRa
 /**
  * Returns true if the given ODS/API version supports the given Data Standard version
  */
-export function odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion }): boolean {
+export function odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion }: DsVersionAndOdsApiVersion): boolean {
   return semver.satisfies(dataStandardVersion, odsApiVersionSupportsRange(odsApiVersion), { includePrerelease: true });
 }
 
