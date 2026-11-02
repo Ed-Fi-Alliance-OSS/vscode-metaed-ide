@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents working in this repository.
 
 ## What this repo is
 
@@ -45,7 +45,7 @@ LSP client/server pair, both compiled from `src/` to `dist/`:
 - **`src/client/ProjectFinder.ts`** — a workspace folder counts as a MetaEd project iff its
   `package.json` has `metaEdProject.projectName` and `.projectVersion`.
 - **`src/client/DataStandardManager.ts`** — the ODS/API ↔ Data Standard compatibility map
-  (6.1/6.2 require DS 4.0.0 exactly; 7.x accepts >=4.0.0). Bundled DS models ship inside the
+  (6.1/6.2 require DS 4.0.0 exactly; 7.x accepts >=4.0.0; 8.1 requires >=5.2.0). Bundled DS models ship inside the
   extension as `@edfi/ed-fi-model-*` dependencies and are made read-only on activation
   (`allianceMode` setting disables that protection for Alliance staff).
 - **`src/model/`** — types shared by client and server.
@@ -73,7 +73,7 @@ PR titles reference a Jira ticket: `[METAED-XXXX] Description`.
 ## Deploy smoke testing
 
 `.claude/deploy-smoke/SKILL.md` is an interactive protocol for verifying build/deploy against
-real ODS/API 6.x/7.x targets through the Extension Development Host. Use it when validating a
+real Ed-Fi API 6.x/7.x/8.1 targets through the Extension Development Host. Use it when validating a
 MetaEd-js dependency bump that touches deploy behavior.
 
 ## Constraints

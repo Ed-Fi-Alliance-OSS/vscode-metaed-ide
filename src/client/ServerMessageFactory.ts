@@ -19,13 +19,20 @@ import { showErrorNotification } from './Utility';
 import {
   bundledDsRootPath,
   odsApiVersionSupportsDsVersion,
-  dsVersionRangeToModelProjectDirectory,
+  odsApiVersionToModelProjectDirectory,
   odsApiVersionSupportsRange,
 } from './DataStandardManager';
 
 type ServerMessageFactoryOptions = {
   showUiNotifications: boolean;
 };
+
+function bundledVersionsLocation(): string {
+  const rootPath = bundledDsRootPath();
+  return rootPath === undefined
+    ? 'Bundled Data Standard models could not be located.'
+    : `Bundled versions are at ${rootPath}`;
+}
 
 /**
  * Log error message to console and UI (if UI notifications are requested)
@@ -49,7 +56,7 @@ export async function createServerMessage(
   if (projectMetadatas.length === 0) {
     // There are no MetaEd projects in the workspace
     await notifyError(
-      `MetaEd requires a Data Standard project in the workspace. Bundled versions are at ${bundledDsRootPath()}`,
+      `MetaEd requires a Data Standard project in the workspace. ${bundledVersionsLocation()}`,
       outputChannel,
       showUiNotifications,
     );
@@ -67,7 +74,7 @@ export async function createServerMessage(
   if (dataStandardVersionsInWorkspace.length !== 1) {
     // MetaEd requires exactly one data standard project
     await notifyError(
-      `MetaEd requires a single Data Standard project in the workspace. Bundled versions are at ${bundledDsRootPath()}`,
+      `MetaEd requires a single Data Standard project in the workspace. ${bundledVersionsLocation()}`,
       outputChannel,
       showUiNotifications,
     );
@@ -79,10 +86,13 @@ export async function createServerMessage(
 
   if (!odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion })) {
     // Selected DS version and ODS/API version are not compatible
+    const recommendedDirectory = odsApiVersionToModelProjectDirectory(odsApiVersion);
+    const recommendation =
+      recommendedDirectory === undefined ? '' : `, such as the bundled model at ${recommendedDirectory}`;
     await notifyError(
-      `ODS/API version ${getTargetOdsApiMajorMinorVersion()} under File -> Preferences -> Settings requires data standard project such as at ${dsVersionRangeToModelProjectDirectory(
-        odsApiVersionSupportsRange(odsApiVersion),
-      )}`,
+      `Ed-Fi API version ${getTargetOdsApiMajorMinorVersion()} under File -> Preferences -> Settings requires a Data Standard project matching ${odsApiVersionSupportsRange(
+        odsApiVersion,
+      )}${recommendation}.`,
       outputChannel,
       showUiNotifications,
     );

@@ -106,7 +106,7 @@
 				},
 				"metaed.odsApiDeploymentDirectory": {
 					"order": 2,
-					"description": "Full path to root folder for the Ed-Fi ODS / API source code.  The folder this points to should contain Ed-Fi-ODS and Ed-Fi-ODS-Implementation folders.",
+					"description": "Full path to root folder for the Ed-Fi API source code.  The folder this points to should contain Ed-Fi-ODS and Ed-Fi-ODS-Implementation folders.",
 					"type": "string",
 					"default": ""
 				},

@@ -247,10 +247,10 @@ async function addSubscriptions(context: ExtensionContext) {
       (async () => {
         if (deployResult.success) {
           await showInfoNotification(
-            `MetaEd deploy success: Find results under '${getOdsApiDeploymentDirectory()}' ODS/API folder.`,
+            `MetaEd deploy success: Find results under '${getOdsApiDeploymentDirectory()}' Ed-Fi API source folder.`,
           );
         } else {
-          await showErrorNotification(`'MetaEd deploy failure: ${deployResult.failureMessage}'`);
+          await showErrorNotification(`MetaEd deploy failure: ${deployResult.failureMessage}`);
         }
       })();
     }),
@@ -354,18 +354,19 @@ export async function activate(context: ExtensionContext) {
 
   client.outputChannel.appendLine('MetaEd has started 🎬 ');
 
-  if (!isBundledDataStandardProjectInWorkspace() && !allianceMode()) {
+  const bundledRootPath = bundledDsRootPath();
+  if (bundledRootPath !== undefined && !isBundledDataStandardProjectInWorkspace() && !allianceMode()) {
     // eslint-disable-next-line no-void
     void window
       .showInformationMessage(
-        `MetaEd has started 🎬 MetaEd requires a Data Standard project in the workspace. Bundled versions are at ${bundledDsRootPath()}`,
+        `MetaEd has started 🎬 MetaEd requires a Data Standard project in the workspace. Bundled versions are at ${bundledRootPath}`,
         'Open Folder Location',
       )
       .then(async (selection) => {
         if (selection === 'Open Folder Location') {
           await window
             .showOpenDialog({
-              defaultUri: Uri.file(bundledDsRootPath()),
+              defaultUri: Uri.file(bundledRootPath),
               canSelectFolders: true,
               canSelectFiles: false,
             })

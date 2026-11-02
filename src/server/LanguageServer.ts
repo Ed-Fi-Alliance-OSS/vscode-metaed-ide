@@ -73,21 +73,16 @@ clientConnection.onNotification('metaed/deploy', (deployParams: DeployParameters
   (async () => {
     clientConnection.console.log(`${Date.now()}: Server received deploy command from client`);
 
-    const buildSuccess: boolean = await build(deployParams.serverMessage);
-
-    clientConnection.console.log(`${Date.now()}: Server sending build complete notification to client`);
-    await clientConnection.sendNotification('metaed/buildComplete', buildSuccess);
-
-    if (!buildSuccess) {
-      const deployResult: DeployResult = {
-        success: false,
-        failureMessage: 'Build failed. Deployment was not attempted. See Problems window.',
-      };
-      await clientConnection.sendNotification('metaed/deployComplete', deployResult);
-      return;
+    let deployResult: DeployResult;
+    try {
+      const buildSuccess: boolean = await build(deployParams.serverMessage);
+      deployResult = buildSuccess
+        ? await deploy(deployParams)
+        : { success: false, failureMessage: 'Build failed. Deployment was not attempted. See Problems window.' };
+    } catch (error) {
+      deployResult = { success: false, failureMessage: error instanceof Error ? error.message : String(error) };
+      clientConnection.console.error(`${Date.now()}: Deploy command failed: ${deployResult.failureMessage}`);
     }
-
-    const deployResult: DeployResult = await deploy(deployParams);
 
     clientConnection.console.log(`${Date.now()}: Server sending deploy complete notification to client`);
     await clientConnection.sendNotification('metaed/deployComplete', deployResult);

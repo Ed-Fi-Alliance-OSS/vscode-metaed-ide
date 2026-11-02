@@ -28,7 +28,7 @@ does not pass. Remove the override when Azure Identity requests a patched
 MSAL Node version itself.
 
 As of October 29, 2026, `deepmerge` 4.3.1, pulled in by
-`@edfi/metaed-core` 4.8.0, has an unpatched low-severity advisory:
+`@edfi/metaed-core` (currently pinned to 4.9.0), has an unpatched low-severity advisory:
 [GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4).
 Its dependent MetaEd packages also appear in the audit report. The suggested
 `npm audit fix --force` downgrades MetaEd to 4.0.0; it does not patch the
