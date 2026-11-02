@@ -1,4 +1,7 @@
 .vscode/
+.claude/
+docs/
+AGENTS.md
 src/
 tsconfig.*
 .editorconfig

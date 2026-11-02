@@ -35,11 +35,18 @@ compatibility, deployment notifications/recovery, and bundled-file protection.
   grammar, bundled models, dynamic plugins, API 8.1 setting, and versions verified.
 - Qualified VSIX: 25,243,316 bytes, 21,890 entries; SHA-256
   `fffa8b23630be78ef245baeeef776662778b18825c7f51ec76ec9ad83265cf53`.
-- Subsequent fresh package at `extension/vscode-metaed.vsix`: same size and entry count;
+- Earlier follow-up package, before the documentation exclusions: same size and entry count;
   SHA-256 `7cbe055c3629ea10448c4ca520314e1d6fc534f6db7d85f1ead165a2b600b50f`.
   ZIP integrity passed and every entry's extracted bytes match the qualified VSIX.
   The archive hash differs, but its contents are identical. This package was built
   before this documentation update; it contains the earlier qualification document.
+- Current package at `extension/vscode-metaed.vsix`, rebuilt from `19de431` with the
+  `.vscodeignore` documentation exclusions: 25,203,376 bytes, 21,882 entries; SHA-256
+  `a9134eff86f7940626939fd485ab63dedf03496c258f2a5c4ad5273d03497c61`.
+  `npm run package` and ZIP integrity checks passed. The eight files under root `docs/`,
+  `.claude/`, and `AGENTS.md` are absent. No entries were added, and every retained entry
+  is byte-for-byte identical to the qualified VSIX. This packaging check does not rerun
+  or extend the automated, external, or visual qualification results above.
 - Evidence root: `/home/brad/work/metaed-qualification-20261102-1b0d976`.
   [Combined report](/home/brad/work/metaed-qualification-20261102-1b0d976/results/report.md),
   [machine-readable results](/home/brad/work/metaed-qualification-20261102-1b0d976/results/results.json),
@@ -165,4 +172,5 @@ were restored, the disposable SQL container was removed, and test language serve
 Existing ODS checkouts, installed extensions, bundled models, source code, package
 declarations, and lockfile were not modified. The checkout stayed clean through qualification
 and the subsequent VSIX build; only this qualification report changed in the documentation
-update. No commit, push, or publication was performed.
+update. The later packaging cleanup changed only `.vscodeignore` and this report among
+tracked files, and rebuilt the VSIX. No commit, push, or publication was performed by these runs.
