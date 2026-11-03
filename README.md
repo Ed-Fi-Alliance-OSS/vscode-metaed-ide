@@ -84,9 +84,9 @@ Please report support issues through the [Ed-Fi Community Hub](https://community
   Ed-Fi API 8.1 or later.
 * Shows Build and Deploy toolbar buttons only for MetaEd files. Improves bundled
   Data Standard model lookup, compatibility messages, and read-only protection.
-* Adds snapshot headers and responses to generated Data Management Service (DMS)
-  OpenAPI documents. Corrects DMS ApiSchema namespace authorization metadata to
-  exclude Namespace values inside collections.
+* Adds snapshot headers and responses to generated Ed-Fi API 8 OpenAPI documents.
+  Corrects DMS ApiSchema namespace authorization metadata to exclude Namespace 
+  values inside collections.
 * Updates dependencies, including security fixes.
 
 ### 4.8.0
