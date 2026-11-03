@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents working in this repository.
 
 ## What this repo is
 
@@ -45,7 +45,7 @@ LSP client/server pair, both compiled from `src/` to `dist/`:
 - **`src/client/ProjectFinder.ts`** — a workspace folder counts as a MetaEd project iff its
   `package.json` has `metaEdProject.projectName` and `.projectVersion`.
 - **`src/client/DataStandardManager.ts`** — the ODS/API ↔ Data Standard compatibility map
-  (6.1/6.2 require DS 4.0.0 exactly; 7.x accepts >=4.0.0). Bundled DS models ship inside the
+  (6.1/6.2 require DS 4.0.0 exactly; 7.x accepts >=4.0.0; 8.1 requires >=5.2.0). Bundled DS models ship inside the
   extension as `@edfi/ed-fi-model-*` dependencies and are made read-only on activation
   (`allianceMode` setting disables that protection for Alliance staff).
 - **`src/model/`** — types shared by client and server.
@@ -62,17 +62,22 @@ auto-creates a GitHub pre-release with the VSIX attached; flipping the release o
 publishes it to the Visual Studio Marketplace. Sync PRs look like #77 (bump deps + version to a
 dev prerelease); release PRs look like #78 (bump everything to the release version).
 
+Before release, run the [regression plan](docs/regression/PLAN.md) using its release coverage,
+the [agent instructions](docs/regression/AGENT.md), and the
+[visual testing checklist](docs/regression/VISUAL.md). Record results and required IDE visual
+evidence; report blocked or skipped checks explicitly. Complete public Marketplace/update
+checks after publication, as specified in the plan.
+
 PR titles reference a Jira ticket: `[METAED-XXXX] Description`.
 
 ## Deploy smoke testing
 
 `.claude/deploy-smoke/SKILL.md` is an interactive protocol for verifying build/deploy against
-real ODS/API 6.x/7.x targets through the Extension Development Host. Use it when validating a
+real Ed-Fi API 6.x/7.x/8.1 targets through the Extension Development Host. Use it when validating a
 MetaEd-js dependency bump that touches deploy behavior.
 
 ## Constraints
 
 - The VSIX cannot be bundled/minified: MetaEd loads plugin packages dynamically, so tree-shaking
   breaks it (see docs/DEVELOPMENT.md).
-- Node 20 is what CI uses; TypeScript is pinned old (4.8) along with the airbnb ESLint stack —
-  expect older syntax limits.
+

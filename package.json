@@ -3,7 +3,7 @@
 	"displayName": "MetaEd IDE",
 	"description": "Ed-Fi MetaEd IDE for Visual Studio Code",
 	"license": "SEE LICENSE IN LICENSE.md",
-	"version": "4.8.0",
+	"version": "4.9.0",
 	"publishConfig": {
 		"registry": "https://pkgs.dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_packaging/EdFi/npm/registry/"
 	},
@@ -92,7 +92,7 @@
 			"properties": {
 				"metaed.targetOdsApiVersion": {
 					"order": 1,
-					"description": "The target Ed-Fi ODS/API version",
+					"description": "The target Ed-Fi API version",
 					"type": "string",
 					"default": "7.3",
 					"enum": [
@@ -100,12 +100,13 @@
 						"6.2",
 						"7.1",
 						"7.2",
-						"7.3"
+						"7.3",
+						"8.1"
 					]
 				},
 				"metaed.odsApiDeploymentDirectory": {
 					"order": 2,
-					"description": "Full path to root folder for the Ed-Fi ODS / API source code.  The folder this points to should contain Ed-Fi-ODS and Ed-Fi-ODS-Implementation folders.",
+					"description": "Full path to root folder for the Ed-Fi API source code.  The folder this points to should contain Ed-Fi-ODS and Ed-Fi-ODS-Implementation folders.",
 					"type": "string",
 					"default": ""
 				},
@@ -161,34 +162,38 @@
 		"@edfi/ed-fi-model-5.2": "3.0.1",
 		"@edfi/ed-fi-model-6.0": "3.0.1",
 		"@edfi/ed-fi-model-6.1": "3.0.0",
-		"@edfi/metaed-console": "4.8.0",
-		"@edfi/metaed-core": "4.8.0",
-		"@edfi/metaed-default-plugins": "4.8.0",
-		"@edfi/metaed-odsapi-deploy": "4.8.0",
-		"@edfi/metaed-plugin-edfi-handbook": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-changequery": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-changequery-postgresql": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-changequery-sqlserver": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-postgresql": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-recordownership": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-recordownership-postgresql": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-recordownership-sqlserver": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-relational": "4.8.0",
-		"@edfi/metaed-plugin-edfi-ods-sqlserver": "4.8.0",
-		"@edfi/metaed-plugin-edfi-odsapi": "4.8.0",
-		"@edfi/metaed-plugin-edfi-sql-dictionary": "4.8.0",
-		"@edfi/metaed-plugin-edfi-unified": "4.8.0",
-		"@edfi/metaed-plugin-edfi-unified-advanced": "4.8.0",
-		"@edfi/metaed-plugin-edfi-xml-dictionary": "4.8.0",
-		"@edfi/metaed-plugin-edfi-xsd": "4.8.0",
+		"@edfi/metaed-console": "4.9.0",
+		"@edfi/metaed-core": "4.9.0",
+		"@edfi/metaed-default-plugins": "4.9.0",
+		"@edfi/metaed-odsapi-deploy": "4.9.0",
+		"@edfi/metaed-plugin-edfi-handbook": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-changequery": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-changequery-postgresql": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-changequery-sqlserver": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-postgresql": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-recordownership": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-recordownership-postgresql": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-recordownership-sqlserver": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-relational": "4.9.0",
+		"@edfi/metaed-plugin-edfi-ods-sqlserver": "4.9.0",
+		"@edfi/metaed-plugin-edfi-odsapi": "4.9.0",
+		"@edfi/metaed-plugin-edfi-sql-dictionary": "4.9.0",
+		"@edfi/metaed-plugin-edfi-unified": "4.9.0",
+		"@edfi/metaed-plugin-edfi-unified-advanced": "4.9.0",
+		"@edfi/metaed-plugin-edfi-xml-dictionary": "4.9.0",
+		"@edfi/metaed-plugin-edfi-xsd": "4.9.0",
 		"chmodr": "^1.2.0",
 		"p-debounce": "2.1.0",
-		"ramda": "^0.28.0",
 		"semver": "^5.7.2",
 		"tmp-promise": "^3.0.3",
 		"vscode-languageclient": "^9.0.0",
 		"vscode-languageserver": "^9.0.0",
 		"vscode-uri": "^3.0.6"
+	},
+	"overrides": {
+		"@azure/identity": {
+			"@azure/msal-node": "^7.1.2"
+		}
 	},
 	"devDependencies": {
 		"@types/chmodr": "^1.0.0",

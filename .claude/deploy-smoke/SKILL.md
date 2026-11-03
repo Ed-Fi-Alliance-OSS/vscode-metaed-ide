@@ -1,7 +1,7 @@
 ---
 name: deploy-smoke
-description: "Interactive ODS/API deploy smoke test protocol: verify deploys to 6.x/7.x targets through the real VS Code extension using locally built packages. Claude drives setup and disk verification; the user clicks Build/Deploy in the Extension Development Host."
-argument-hint: "[6x|7x|tpdm|extended|all]"
+description: "Interactive ODS/API deploy smoke test protocol: verify deploys to 6.x/7.x/8.1 targets through the real VS Code extension using locally built packages. Claude drives setup and disk verification; the user clicks Build/Deploy in the Extension Development Host."
+argument-hint: "[6x|7x|8x|tpdm|extended|all]"
 allowed-tools: ["Bash", "PowerShell", "Glob", "Grep", "Read", "Write", "Edit"]
 ---
 
@@ -15,7 +15,7 @@ the original run and results are recorded on that Jira ticket.
 pre-flight, launches windows, verifies results on disk, and records outcomes. The user runs
 `MetaEd: Build` and `MetaEd: Deploy` (Ctrl+Shift+P) and reports the notifications.
 
-`$ARGUMENTS`: which matrix rows to run — `6x` (S1/S4/S2), `7x` (S3), `tpdm` (S15), `extended`
+`$ARGUMENTS`: which matrix rows to run — `6x` (S1/S4/S2), `7x` (S3), `8x` (S16), `tpdm` (S15), `extended`
 (S5–S14, non-blocking editor scenarios), or `all` (default: all blocking rows; does NOT include `extended`).
 
 ## Phase 0 — Preconditions (Claude, before involving the user)
@@ -51,12 +51,12 @@ See its `README.md`. If missing, recreate:
 - `deploy-target\Ed-Fi-ODS\` and `deploy-target\Ed-Fi-ODS-Implementation\Application\EdFi.Ods.Extensions.<Project>\`
   for EVERY extension project to be deployed (Sample, TPDM) — `ExtensionProjectsExists` fails the deploy otherwise.
 - `ed-fi-model-4.0\`, `ed-fi-model-6.0\`: copy from `vscode-metaed-ide\node_modules\@edfi\` (copies, so
-  builds never write into node_modules). Pairings: DS 4.0 ↔ targets 6.1/6.2; DS 6.0 ↔ target 7.3.
+  builds never write into node_modules). Pairings: DS 4.0 ↔ targets 6.1/6.2; DS 6.0 ↔ targets 7.3/8.1. API 8.1 requires DS >=5.2.0.
 - `sample-extension\`: package.json with `metaEdProject { projectName: "Sample", projectVersion: "1.0.0" }`,
   one DomainEntity, one Descriptor, self-contained (no core references → builds against any DS).
 - `tpdm\`: copy of `packages/metaed-plugin-edfi-api-schema/test/integration/tpdm-project` (TPDM-Core 1.1.0,
   DS 4.0-compatible).
-- Three workspace files (`smoke-6x-sample`, `smoke-7x-sample`, `smoke-6x-tpdm`.code-workspace) with settings
+- Four workspace files (`smoke-6x-sample`, `smoke-7x-sample`, `smoke-8x-sample`, `smoke-6x-tpdm`.code-workspace) with settings
   `metaed.targetOdsApiVersion`, `metaed.odsApiDeploymentDirectory` → deploy-target, `metaed.acceptedLicense: true`.
 - **Pre-validate each workspace pairing headless** before any IDE run:
   `node packages/metaed-console/dist/index.js --config <cfg> --accept-license true`
@@ -109,6 +109,13 @@ User: Build (DS 6.0 is slow), then Deploy. Claude verifies:
 - 6.x-style `Artifacts\` folder is ABSENT (the deploy's cleanup removes any prior one; V6 tasks must not recreate it at >=7.0.0).
 - Expect 7.x output differences: no Interchange/XSD generated, extra scripts like `1460-...AggregateIdColumns.sql`.
 
+### S16 — Deploy 8.1 (workspace: smoke-8x-sample — APPLY THE ONE-WINDOW RULE)
+User: Build and Deploy with DS 6.0 and target 8.1. Claude verifies:
+- Fresh versioned deployment under `Versions/<projVer>/Standard/<dsVer>/Artifacts`, matching source hashes.
+- Generated metadata reports `odsApiVersion: "8.1"`; no unversioned extension `Artifacts` folder remains.
+- Separately try DS 4.0, 5.0, and 5.1 with 8.1: the client rejects each before building/deploying
+  and recommends the bundled `ed-fi-model-6.1` directory. DS 5.2 is the minimum accepted version.
+
 ### S15 — TPDM on 6.1 (workspace: smoke-6x-tpdm — ONE-WINDOW RULE)
 User: Build (TPDM is large), then Deploy. Claude verifies:
 `EdFi.Ods.Extensions.TPDM\Artifacts\{Metadata, MsSql, PgSql, Schemas}` populated, `odsApiVersion: "6.1"`.
@@ -124,7 +131,7 @@ ed-fi-model-5.0 + target 6.1); S13 needs the bundled model itself as a workspace
 | # | Area | Test | Expected |
 | --- | --- | --- | --- |
 | S5 | ODS target switching | Switch `metaed.targetOdsApiVersion` 6.1 → 7.3 → 6.1 (DS 4.0 workspace), building each time; Deploy once on the final 6.1 pass | Build succeeds each time — verify each via `odsApiVersion` in build output (Phase 1 step 4). Note: with DS 4.0, Interchange/XSD still generate at target 7.3 — artifact-set differences track DS version, not target |
-| S6 | DS/ODS mismatch | Build an incompatible pairing (e.g. DS 5.0 project, target 6.1) | Immediate compatibility error notification ("ODS/API version 6.1 ... requires data standard project ..."); no crash, no build |
+| S6 | DS/ODS mismatch | Build an incompatible pairing (e.g. DS 5.0 project, target 6.1) | Immediate compatibility error notification ("Ed-Fi API version 6.1 ... requires a Data Standard project matching 4.0.0 ..."); no crash, no build |
 | S7 | DS version switching | Build the same extension against ed-fi-model-4.0 (target 6.1), then ed-fi-model-6.0 (target 7.3) — ONE-WINDOW RULE | Both build successfully; DS 6.0 artifact set has no Interchange/XSD |
 | S8 | Garbage in a file | Paste invalid text into a `.metaed` file in the extension project | Squiggles + Problems entries with exact line/col ("mismatched input ..."); revert clears them |
 | S9 | Validation errors | Remove `documentation`, remove identity, reference a nonexistent entity, duplicate a property name | A distinct parser/validator message in Problems for each |

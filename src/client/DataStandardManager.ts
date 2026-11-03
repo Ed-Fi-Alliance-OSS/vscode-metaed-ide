@@ -9,7 +9,6 @@ import { promisify } from 'node:util';
 import { Extension, extensions, window, workspace } from 'vscode';
 import chmodr from 'chmodr';
 import semver from 'semver';
-import * as R from 'ramda';
 import { SemVer } from '@edfi/metaed-core';
 
 export type SemVerRange = string;
@@ -17,51 +16,53 @@ export type SemVerRange = string;
 // promise version of chmodr
 const chmodrp = promisify(chmodr);
 
-// keys are ODS/API versions, values are corresponding DS version ranges supported
-const odsApiToDsVersionRange: Map<SemVer, SemVerRange> = new Map([
-  ['6.1.0', '4.0.0'],
-  ['6.2.0', '4.0.0'],
-  ['7.1.0', '>=4.0.0'],
-  ['7.2.0', '>=4.0.0'],
-  ['7.3.0', '>=4.0.0'],
+type DataStandardCompatibility = { range: SemVerRange; recommendedModel: string };
+
+const defaultCompatibility: DataStandardCompatibility = { range: '4.0.0', recommendedModel: 'ed-fi-model-4.0' };
+
+// Keep each supported range and its recommended bundled model together.
+const odsApiCompatibility: Map<SemVer, DataStandardCompatibility> = new Map([
+  ['6.1.0', defaultCompatibility],
+  ['6.2.0', defaultCompatibility],
+  ['7.1.0', { range: '>=4.0.0', recommendedModel: 'ed-fi-model-6.1' }],
+  ['7.2.0', { range: '>=4.0.0', recommendedModel: 'ed-fi-model-6.1' }],
+  ['7.3.0', { range: '>=4.0.0', recommendedModel: 'ed-fi-model-6.1' }],
+  ['8.1.0', { range: '>=5.2.0', recommendedModel: 'ed-fi-model-6.1' }],
 ]);
+
+let cachedBundledDsRootPath: string | undefined;
+let extensionLookupErrorReported = false;
 
 /**
  * Finds the root directory path for the bundled Data Standard models.
  */
-export const bundledDsRootPath: () => string = R.memoizeWith(R.identity, () => {
-  const metaedExtension: Extension<void> | undefined = extensions.getExtension('Ed-FiAlliance.vscode-metaed-ide');
-  if (metaedExtension == null) {
-    // eslint-disable-next-line no-void
-    void window.showErrorMessage('MetaEd hardcoded extension publisher.name is incorrect');
-    return '';
+export function bundledDsRootPath(): string | undefined {
+  if (cachedBundledDsRootPath !== undefined) {
+    return cachedBundledDsRootPath;
   }
 
-  return path.join(metaedExtension.extensionPath, 'node_modules', '@edfi');
-});
+  const metaedExtension: Extension<void> | undefined = extensions.getExtension('Ed-FiAlliance.vscode-metaed-ide');
+  if (metaedExtension == null) {
+    if (!extensionLookupErrorReported) {
+      extensionLookupErrorReported = true;
+      // eslint-disable-next-line no-void
+      void window.showErrorMessage('MetaEd could not locate its extension installation and bundled Data Standard models.');
+    }
+    return undefined;
+  }
 
-function nodeModulesPath(moduleName: string) {
-  return path.join(bundledDsRootPath(), moduleName);
+  cachedBundledDsRootPath = path.join(metaedExtension.extensionPath, 'node_modules', '@edfi');
+  return cachedBundledDsRootPath;
 }
 
 /**
- * Returns a recommended bundled data model project directory for the given data standard version range
+ * Returns a recommended bundled data model project directory for the given Ed-Fi API version
  */
-export function dsVersionRangeToModelProjectDirectory(dsVersionRange: SemVerRange): string {
-  let modelPath = '';
-
-  switch (dsVersionRange) {
-    case '4.0.0':
-      modelPath = nodeModulesPath('ed-fi-model-4.0');
-      break;
-    case '>=4.0.0':
-      modelPath = nodeModulesPath('ed-fi-model-6.1');
-      break;
-    default:
-      break;
-  }
-
-  return modelPath;
+export function odsApiVersionToModelProjectDirectory(odsApiVersion: SemVerRange): string | undefined {
+  const rootPath = bundledDsRootPath();
+  if (rootPath === undefined) return undefined;
+  const { recommendedModel } = odsApiCompatibility.get(odsApiVersion) ?? defaultCompatibility;
+  return path.join(rootPath, recommendedModel);
 }
 
 export type DsVersionAndOdsApiVersion = { dataStandardVersion: SemVerRange; odsApiVersion: SemVerRange };
@@ -70,14 +71,19 @@ export type DsVersionAndOdsApiVersion = { dataStandardVersion: SemVerRange; odsA
  * Returns the Data Standard version range supported by the given ODS/API version
  */
 export function odsApiVersionSupportsRange(odsApiVersion: SemVerRange): SemVerRange {
-  return odsApiToDsVersionRange.get(odsApiVersion) ?? '4.0.0';
+  return (odsApiCompatibility.get(odsApiVersion) ?? defaultCompatibility).range;
 }
 
 /**
  * Returns true if the given ODS/API version supports the given Data Standard version
  */
-export function odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion }): boolean {
+export function odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVersion }: DsVersionAndOdsApiVersion): boolean {
   return semver.satisfies(dataStandardVersion, odsApiVersionSupportsRange(odsApiVersion), { includePrerelease: true });
+}
+
+function isWithinBundledDsRoot(folderPath: string, rootPath: string): boolean {
+  const relativePath = path.relative(rootPath, folderPath);
+  return relativePath !== '..' && !relativePath.startsWith(`..${path.sep}`) && !path.isAbsolute(relativePath);
 }
 
 /**
@@ -85,13 +91,15 @@ export function odsApiVersionSupportsDsVersion({ dataStandardVersion, odsApiVers
  */
 export async function ensureBundledDsReadOnly() {
   if (workspace.workspaceFolders == null) return;
+  const rootPath = bundledDsRootPath();
+  if (rootPath === undefined) return;
 
   // eslint-disable-next-line no-restricted-syntax
   for (const workspaceFolder of workspace.workspaceFolders) {
     const folderPath = workspaceFolder.uri.fsPath;
 
     // set packaged data standard project files as read-only
-    if (folderPath.includes(bundledDsRootPath())) {
+    if (isWithinBundledDsRoot(folderPath, rootPath)) {
       await chmodrp(folderPath, 0o444);
     }
   }
@@ -102,12 +110,14 @@ export async function ensureBundledDsReadOnly() {
  */
 export function isBundledDataStandardProjectInWorkspace(): boolean {
   if (workspace.workspaceFolders == null) return false;
+  const rootPath = bundledDsRootPath();
+  if (rootPath === undefined) return false;
 
   // eslint-disable-next-line no-restricted-syntax
   for (const workspaceFolder of workspace.workspaceFolders) {
     const folderPath = workspaceFolder.uri.fsPath;
 
-    if (folderPath.includes(bundledDsRootPath())) {
+    if (isWithinBundledDsRoot(folderPath, rootPath)) {
       return true;
     }
   }
