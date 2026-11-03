@@ -73,6 +73,33 @@ Please report support issues through the [Ed-Fi Community Hub](https://community
 
 ## Release Notes
 
+### 4.9.0
+
+* Adds Ed-Fi API 8.1 as a target, requiring Data Standard 5.2 or later.
+* Improves handling of invalid models: reports validation errors without
+  cascading artifact-generation failures, and prevents deployment when the
+  preceding build fails. Deployment exceptions now produce a failure notification.
+* Adds warnings for unresolved Domain Entity members in domains, and rejects
+  property names that conflict with reserved query parameters when targeting
+  Ed-Fi API 8.1 or later.
+* Shows Build and Deploy toolbar buttons only for MetaEd files. Improves bundled
+  Data Standard model lookup, compatibility messages, and read-only protection.
+* Adds snapshot headers and responses to generated Data Management Service (DMS)
+  OpenAPI documents. Corrects DMS ApiSchema namespace authorization metadata to
+  exclude Namespace values inside collections.
+* Updates dependencies, including security fixes.
+
+### 4.8.0
+
+* Restores core and extension artifact deployment to ODS/API 6.1 and 6.2.
+* Adds DMS OpenAPI definitions for Change Queries, including deleted records,
+  natural key changes, and available change versions.
+* Corrects generated DMS ApiSchema metadata for choice and optional inline common
+  properties, numeric school years, UniqueId query mappings, and equality
+  constraints involving merged identity properties.
+* Removes underscores from extension OpenAPI operation identifiers for SDK
+  generator compatibility.
+
 ### 4.7.0
 
 Data Standard 6.1 support.
