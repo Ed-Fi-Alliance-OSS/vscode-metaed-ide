@@ -94,8 +94,8 @@ Please report support issues through the [Ed-Fi Community Hub](https://community
 * Restores core and extension artifact deployment to ODS/API 6.1 and 6.2.
 * Adds Ed-Fi API 8 OpenAPI definitions for Change Queries, including deleted records,
   natural key changes, and available change versions.
-* Corrects generated DMS ApiSchema metadata for choice and optional inline common
-  properties, numeric school years, UniqueId query mappings, and equality
+* Corrects generated  Ed-Fi API 8 ApiSchema metadata for choice and optional inline
+  common properties, numeric school years, UniqueId query mappings, and equality
   constraints involving merged identity properties.
 * Removes underscores from extension OpenAPI operation identifiers for SDK
   generator compatibility.
