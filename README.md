@@ -41,10 +41,11 @@ the Command Palette. Hit Ctrl-Shift-P, start typing "metaed" and select
 lower right will include the file system path of the bundled Data Standard
 projects.
 
-## Target ODS/API Versions
+## Target Ed-Fi API Versions
 
-The IDE settings include a dropdown for selecting the target ODS/API version.
-MetaEd will indicate if there is an ODS/API version and Data Standard model
+The IDE settings include a dropdown for selecting the target Ed-Fi API version.
+Versions 6.1–7.3 target the Ed-Fi ODS/API, and 8.1 targets Ed-Fi API 8.1.
+MetaEd will indicate if there is an Ed-Fi API version and Data Standard model
 mismatch in a lower-right notification. The notification will include the
 bundled location of the correct Data Standard model.
 
@@ -53,7 +54,7 @@ bundled location of the correct Data Standard model.
 Open File -> Preferences -> Settings and search on "metaed" to find these
 settings:
 
-* **Target Ods Api Version**: The target Ed-Fi ODS/API version.
+* **Target Ods Api Version**: The target Ed-Fi API version.
 * **Ods Api Deployment Directory**: Full path to root folder for the Ed-Fi 
   ODS/API source code. The folder this points to should contain Ed-Fi-ODS and
   Ed-Fi-ODS-Implementation folders. Note: If Ed-Fi-ODS and
@@ -85,8 +86,8 @@ Please report support issues through the [Ed-Fi Community Hub](https://community
 * Shows Build and Deploy toolbar buttons only for MetaEd files. Improves bundled
   Data Standard model lookup, compatibility messages, and read-only protection.
 * Adds snapshot headers and responses to generated Ed-Fi API 8 OpenAPI documents.
-  Corrects DMS ApiSchema namespace authorization metadata to exclude Namespace 
-  values inside collections.
+  Corrects Ed-Fi API 8 ApiSchema namespace authorization metadata to exclude
+  Namespace values inside collections.
 * Updates dependencies, including security fixes.
 
 ### 4.8.0
@@ -94,7 +95,7 @@ Please report support issues through the [Ed-Fi Community Hub](https://community
 * Restores core and extension artifact deployment to ODS/API 6.1 and 6.2.
 * Adds Ed-Fi API 8 OpenAPI definitions for Change Queries, including deleted records,
   natural key changes, and available change versions.
-* Corrects generated  Ed-Fi API 8 ApiSchema metadata for choice and optional inline
+* Corrects generated Ed-Fi API 8 ApiSchema metadata for choice and optional inline
   common properties, numeric school years, UniqueId query mappings, and equality
   constraints involving merged identity properties.
 * Removes underscores from extension OpenAPI operation identifiers for SDK
