@@ -74,6 +74,10 @@ Please report support issues through the [Ed-Fi Community Hub](https://community
 
 ## Release Notes
 
+### 4.9.1
+
+Updates release notes and clarifies Ed-Fi API target versions. No functional changes.
+
 ### 4.9.0
 
 * Adds Ed-Fi API 8.1 as a target, requiring Data Standard 5.2 or later.
