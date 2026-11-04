@@ -6,13 +6,14 @@ Standard models. This is documentation and extension version metadata only.
 
 ## Provenance
 
-* Checkout: `/home/brad/work/vscode-metaed-ide`, branch `docs/release-notes-4.8-4.9`.
+* Repository: `vscode-metaed-ide`, branch `docs/release-notes-4.8-4.9`.
 * Starting commit: `79094beb7983e2de3eecfdd8ed51f98915e62197`, initially clean. Checks ran
   with the 4.9.1 version, README, and qualification-policy edits in the working tree.
 * Environment: Linux x64, kernel 6.14.0-37-generic; Node 26.12.1; npm 11.20.0;
   VS Code 1.144.0 (`2c33b50b16c472efe58357d1d2a8a5414bc23fbf`).
-* Evidence: `/home/brad/work/metaed-qualification-4.9.1-20261104`, containing environment
-  metadata, command logs, comparison results, verification scripts, and both VSIX files.
+* Evidence retained outside the repository: environment metadata, command logs, comparison
+  results, verification scripts, and both VSIX files. Evidence filenames below are relative
+  to that collection.
 * Baseline: `vscode-metaed.vsix` downloaded from the published GitHub release `4.9.0`.
   SHA-256: `51aa5d1ad42424a86eb742fb8069d2392d18d20e40d5c77ab7aa493fd684871b`.
 * Candidate: `vscode-metaed-4.9.1.vsix` in the evidence directory, also built at

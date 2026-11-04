@@ -52,10 +52,10 @@ LSP client/server pair, both compiled from `src/` to `dist/`:
 
 ## Versioning and release
 
-For engine updates, the package `version` and all `@edfi/metaed-*` dependency versions move in lockstep with what
-MetaEd-js publishes to npm: `X.Y.Z-dev.N` prereleases between releases, exact release versions at
-release time. The `@edfi/ed-fi-model-*` packages version independently — don't bump them as part
-of a metaed sync.
+For engine updates, the package `version` and all `@edfi/metaed-*` dependency versions move in
+lockstep with what MetaEd-js publishes to npm: `X.Y.Z-dev.N` prereleases between releases,
+exact release versions at release time. The `@edfi/ed-fi-model-*` packages version independently —
+don't bump them as part of a metaed sync.
 
 Documentation-only extension patches may increment the extension version while retaining the
 published engine version. Update the root versions in `package.json` and `package-lock.json`,
