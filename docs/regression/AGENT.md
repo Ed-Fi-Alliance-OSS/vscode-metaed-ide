@@ -6,6 +6,10 @@ This repository has no regression runner yet: create a temporary harness in the 
 or use an existing reviewed runner if one has since been added. Do not add permanent unit tests
 or change product code merely to execute this plan.
 
+For eligible documentation-only patches, follow PLAN.md's reduced qualification scope instead
+of preparing the runtime matrix and visual fixtures. Record CLI installation separately from V13;
+public Marketplace checks remain deferred until publication.
+
 ## Run
 
 1. Record Git status/commit, OS, tool versions, package/lock versions, installed `@edfi/metaed-*`

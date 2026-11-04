@@ -52,10 +52,14 @@ LSP client/server pair, both compiled from `src/` to `dist/`:
 
 ## Versioning and release
 
-The package `version` and all `@edfi/metaed-*` dependency versions move in lockstep with what
-MetaEd-js publishes to npm: `X.Y.Z-dev.N` prereleases between releases, exact release versions at
-release time. The `@edfi/ed-fi-model-*` packages version independently — don't bump them as part
-of a metaed sync.
+For engine updates, the package `version` and all `@edfi/metaed-*` dependency versions move in
+lockstep with what MetaEd-js publishes to npm: `X.Y.Z-dev.N` prereleases between releases,
+exact release versions at release time. The `@edfi/ed-fi-model-*` packages version independently —
+don't bump them as part of a metaed sync.
+
+Documentation-only extension patches may increment the extension version while retaining the
+published engine version. Update the root versions in `package.json` and `package-lock.json`,
+keep dependency versions and resolutions unchanged, and record both extension and engine versions.
 
 Release flow (docs/DEVELOPMENT.md): merging a `package.json` version change to `main`
 auto-creates a GitHub pre-release with the VSIX attached; flipping the release off "pre-release"
@@ -67,6 +71,8 @@ the [agent instructions](docs/regression/AGENT.md), and the
 [visual testing checklist](docs/regression/VISUAL.md). Record results and required IDE visual
 evidence; report blocked or skipped checks explicitly. Complete public Marketplace/update
 checks after publication, as specified in the plan.
+Documentation-only patches may use the plan's reduced qualification scope when its eligibility
+checks pass; report excluded cases as skipped, not as new regression passes.
 
 PR titles reference a Jira ticket: `[METAED-XXXX] Description`.
 

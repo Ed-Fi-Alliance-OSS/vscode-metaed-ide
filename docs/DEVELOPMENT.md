@@ -40,6 +40,9 @@ fix when one is available.
 To create a new release and publish to Visual Studio Marketplace:
 
 1. Update the `version` value in `package.json`.
+   * Update both root version entries in `package-lock.json` to match.
+   * For a documentation-only patch, retain the published `@edfi/metaed-*` versions
+     and use the [documentation-only qualification scope](regression/PLAN.md#documentation-only-patch-qualification).
    * The version string is used as the GitHub release tag and name.
    * Do not prefix the version with `v`.
    * Example: `1.0.0`

@@ -49,7 +49,8 @@ Routine scope: A01 once; A02/A10/A12 on P1–P4; validation A03–A09 on P3;
 A11 on P3; A13 on P1 and P4; A14–A16 on P1 and P3. V rows specify their pairs.
 N1 is a client check in V04, not a test of a direct engine call bypassing compatibility checks.
 
-For a release or compatibility-map change, expand build/deploy coverage to all supported
+For a release (except eligible documentation-only patches below) or compatibility-map change,
+expand build/deploy coverage to all supported
 pairings: DS 4.0 with targets 6.1/6.2, each bundled DS (4.0, 5.0, 5.1, 5.2, 6.0, 6.1)
 with 7.1/7.2/7.3, and DS 5.2/6.0/6.1 with target 8.1. Also reject each non-4.0 bundled DS
 with 6.1/6.2 and DS 4.0/5.0/5.1 with 8.1 in the client. For incompatible 8.1 pairings,
@@ -58,6 +59,26 @@ this list with the checkout before running. Routine coverage does not certify th
 Release validation also includes V13 and X04/V14 once the release is public. Include V12 for
 Windows/Excel coverage, X01 when SQL generation changes, and X02 when qualifying ODS deployment.
 If required infrastructure is unavailable, report that qualification as incomplete.
+
+## Documentation-only patch qualification
+
+An extension patch that changes only documentation and the extension version may use this
+reduced scope. Record the previous published release and verify that source, settings,
+dependency declarations/resolutions, and packaging configuration are unchanged. The extension
+version may differ from the unchanged MetaEd engine version.
+
+* Run `npm run test:lint` and `npm run package`; retain logs and the VSIX SHA-256.
+* Inspect the VSIX manifest, extension version, README, engine versions, and bundled models.
+  Compare extracted contents with the previous release's VSIX. Only documentation and extension
+  version metadata may differ; investigate any other differences before using this scope.
+* Use isolated VS Code user-data and extension directories to verify CLI installation, version
+  listing, uninstall/reinstall, and upgrade from the previous VSIX. Check the installed README
+  and package metadata. These checks do not establish activation or a visual V13 pass.
+* Record A01 results and the additional package/install checks. Mark A02–A16, V01–V13, and
+  X01–X03 as Skipped because runtime contents are unchanged. Do not carry forward prior passes.
+  If eligibility fails, use the full release scope above.
+* Defer X04/V14 until publication, then verify the public version, README rendering, and
+  Marketplace update. Local VSIX installation does not satisfy public Marketplace checks.
 
 ## Fixtures and isolation
 
