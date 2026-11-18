@@ -57,9 +57,9 @@ See its `README.md`. If missing, recreate:
 - `tpdm\`: copy of `packages/metaed-plugin-edfi-api-schema/test/integration/tpdm-project` (TPDM-Core 1.1.0,
   DS 4.0-compatible).
 - Four workspace files (`smoke-6x-sample`, `smoke-7x-sample`, `smoke-8x-sample`, `smoke-6x-tpdm`.code-workspace) with settings
-  `metaed.targetOdsApiVersion`, `metaed.odsApiDeploymentDirectory` → deploy-target, `metaed.acceptedLicense: true`.
+  `metaed.targetOdsApiVersion`, `metaed.odsApiDeploymentDirectory` → deploy-target.
 - **Pre-validate each workspace pairing headless** before any IDE run:
-  `node packages/metaed-console/dist/index.js --config <cfg> --accept-license true`
+  `node packages/metaed-console/dist/index.js --config <cfg>`
   (config format: see `packages/metaed-console/metaed-edfi-*.json`). A project that doesn't build
   masquerades as a deploy failure.
 
@@ -136,7 +136,7 @@ ed-fi-model-5.0 + target 6.1); S13 needs the bundled model itself as a workspace
 | S8 | Garbage in a file | Paste invalid text into a `.metaed` file in the extension project | Squiggles + Problems entries with exact line/col ("mismatched input ..."); revert clears them |
 | S9 | Validation errors | Remove `documentation`, remove identity, reference a nonexistent entity, duplicate a property name | A distinct parser/validator message in Problems for each |
 | S10 | Simple extension build | Extension with one DomainEntity + one Descriptor + one Choice; Build at 6.1 | Build success; `MetaEdOutput/<Extension>/{ApiMetadata, ApiSchema, Database, Interchange, XSD}` generated |
-| S11 | License gating | Deploy with `metaed.acceptedLicense` false | "You must first accept the Ed-Fi License Agreement" message; nothing deployed |
+| S11 | No license gate | Deploy with a leftover `metaed.acceptedLicense: false` | Deploy proceeds; no license message; artifacts deployed |
 | S12 | Missing deploy dir | Deploy with `metaed.odsApiDeploymentDirectory` empty | "To deploy, set Ods Api Deployment Directory under File -> Preferences -> Settings." (`LanguageClient.ts:125` — wording differs from the older QA spreadsheet); nothing deployed |
 | S13 | Core file edit protection | With Alliance Mode off, edit a bundled core DS file and save | Intended: warning with override prompt on save. KNOWN BUG [METAED-1670] (found 2026-07-08): `ensureBundledDsReadOnly()` sets no read-only flag — case-sensitive path check at `DataStandardManager.ts:94` vs VS Code's lowercase drive letter — so the save currently succeeds silently. Don't re-file; retest once METAED-1670 is fixed |
 | S14 | Delete referenced file | Delete a domain entity file that another file references; Build | Build fails; reference errors in Problems at exact line/col; restoring the file clears them |

@@ -64,7 +64,7 @@ Do not run concurrent commands against the same server, fixture, or output direc
 Use meaningful content assertions, not a hard-coded output count. A complete deployment
 manifest must account for every deployable source file and unexpected destination files.
 
-Client guards (license, project discovery, compatibility, directory validation) are V cases.
+Client guards (project discovery, compatibility, directory validation) are V cases.
 Calling the engine directly bypasses them. A mocked `vscode` module does not prove their
 real integration; do not report such a mock as V evidence.
 
