@@ -34,8 +34,8 @@ Users:
 - **PRDs are living documents.** Edit them in place and simply drop the
   license requirements, with no amendment notes, because git history keeps the
   old text. In the extension, rename `docs/PRD-4.8.md` to `docs/PRD.md` and set
-  its version to 4.10. In MetaEd-JS, edit `docs/PRD-4.x.md`. A Sonnet subagent
-  makes both PRD edits.
+  its version to 4.10. In MetaEd-JS, edit `docs/PRD-4.x.md` and set its
+  version to 4.10. A Sonnet subagent makes both PRD edits.
 - **Branching:**
   - `vscode-metaed-ide`: branch `METAED-1693` from `main`.
   - `MetaEd-JS`: branch `METAED-1693` from the unmerged `PRD` branch, not
@@ -94,7 +94,7 @@ npx ts-node packages/metaed-console/src/index.ts -a -c <config>    # verify lega
 | `docs/cli.md` | Remove `-a` from both help listings and the "Missing required argument" example. Add a note that `-a` is still accepted and ignored, for compatibility. |
 | `eng/ApiSchema/build.ps1` | Drop `-a` from the console call. Optional, because the flag is harmless. |
 | `packages/metaed-console/README.md`, `packages/metaed-odsapi-deploy-console/README.md` | Remove the `--accept-license / -a` bullet. These files come from the `PRD` branch. |
-| `docs/PRD-4.x.md` | In place, drop FR-BUILD-2, FR-DEPLOY-2 and NFR-LIC-1, and remove the "`-a` is required" known-limitation line. Sonnet subagent. |
+| `docs/PRD-4.x.md` | Version bumped to 4.10 (done). In place, drop FR-BUILD-2, FR-DEPLOY-2 and NFR-LIC-1, and remove the "`-a` is required" known-limitation line. Sonnet subagent. |
 
 ### Out of scope
 
@@ -189,5 +189,5 @@ commands.registerCommand('metaed.build', () => {
 2. **Release notes** go in a new `### 4.10.0` section of the extension README.
 3. **PRDs** are living documents edited in place, with no amendment notes. The
    extension's `PRD-4.8.md` becomes `PRD.md` at version 4.10, and MetaEd-JS
-   keeps `PRD-4.x.md`. A Sonnet subagent edits both.
+   keeps `PRD-4.x.md`, also at version 4.10. A Sonnet subagent edits both.
 4. **MetaEd-JS branch** is based on `PRD`, not `main`.
