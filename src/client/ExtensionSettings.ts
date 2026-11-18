@@ -29,10 +29,6 @@ export function getTargetOdsApiVersionSemver(): SemVer {
   return (semver.coerce(targetOdsApiSemVer) || '').toString();
 }
 
-export function acceptedLicense(): boolean {
-  return getWorkspaceConfiguration().get('acceptedLicense') ?? false;
-}
-
 export function allianceMode(): boolean {
   return getWorkspaceConfiguration().get('allianceMode') ?? false;
 }

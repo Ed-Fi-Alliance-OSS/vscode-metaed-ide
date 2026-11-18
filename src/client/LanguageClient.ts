@@ -12,13 +12,7 @@ import {
   TextDocumentChangeEvent,
   TextEditor,
   TextDocument,
-  DiagnosticCollection,
-  languages,
   Uri,
-  Diagnostic,
-  Position,
-  Range,
-  ConfigurationChangeEvent,
   WorkspaceFoldersChangeEvent,
 } from 'vscode';
 import path from 'path';
@@ -28,7 +22,6 @@ import * as fs from 'fs';
 import { DeployResult } from '@edfi/metaed-odsapi-deploy';
 import { showErrorNotification, showInfoNotification, yieldToNextMacroTask } from './Utility';
 import {
-  acceptedLicense,
   allianceMode,
   getOdsApiDeploymentDirectory,
   suppressDeleteOnDeploy,
@@ -41,12 +34,8 @@ import type { ServerMessage } from '../model/ServerMessage';
 import { bundledDsRootPath, ensureBundledDsReadOnly, isBundledDataStandardProjectInWorkspace } from './DataStandardManager';
 
 let client: LanguageClient;
-const acceptedLicenseDiagnosticCollection: DiagnosticCollection = languages.createDiagnosticCollection('acceptedLicense');
 
 const sendLintCommandToServer: () => Promise<void> = debounce(async () => {
-  // Only lint when agreement is accepted
-  if (!acceptedLicense()) return;
-
   const serverMessage: ServerMessage | undefined = await createServerMessage(client.outputChannel, {
     showUiNotifications: false,
   });
@@ -82,13 +71,6 @@ async function addSubscriptions(context: ExtensionContext) {
   context.subscriptions.push(
     commands.registerCommand('metaed.build', () => {
       (async () => {
-        if (!acceptedLicense()) {
-          await showErrorNotification(
-            'You must first accept the Ed-Fi License Agreement under File -> Preferences -> Settings.',
-          );
-          return;
-        }
-
         const serverMessage: ServerMessage | undefined = await createServerMessage(client.outputChannel);
         if (serverMessage == null) {
           await showErrorNotification('Nothing to build.');
@@ -110,13 +92,6 @@ async function addSubscriptions(context: ExtensionContext) {
         const odsFolderPath = path.join(deployDirectoryPath, 'Ed-Fi-ODS');
         const drivePattern = /[a-zA-Z]:/;
         const endsWithSlash = /[/\\]$/;
-
-        if (!acceptedLicense()) {
-          await showErrorNotification(
-            'You must first accept the Ed-Fi License Agreement under File -> Preferences -> Settings.',
-          );
-          return;
-        }
 
         if (deployDirectoryPath === '') {
           await showErrorNotification('To deploy, set Ods Api Deployment Directory under File -> Preferences -> Settings.');
@@ -258,24 +233,6 @@ async function addSubscriptions(context: ExtensionContext) {
 }
 
 /**
- * Sync the accepted license diagnostic message to the acceptedLicense status
- */
-async function syncAcceptedLicenseDiagnostic() {
-  if (acceptedLicense()) {
-    acceptedLicenseDiagnosticCollection.clear();
-    // Give an initial lint once license accepted
-    await sendLintCommandToServer();
-  } else {
-    acceptedLicenseDiagnosticCollection.set(Uri.parse('metaed:Ed-Fi License Needs Accepting', true), [
-      new Diagnostic(
-        new Range(new Position(0, 0), new Position(0, 0)),
-        'Please accept the Ed-Fi License Agreement under File -> Preferences -> Settings',
-      ),
-    ]);
-  }
-}
-
-/**
  * Subscribe to workspace folder changes, ensuring that if a bundled DS project is added that the files are read-only
  */
 export async function listenForWorkspaceFolderChange(context: ExtensionContext) {
@@ -286,21 +243,6 @@ export async function listenForWorkspaceFolderChange(context: ExtensionContext) 
         await ensureBundledDsReadOnly();
         await yieldToNextMacroTask();
       }
-    }),
-  );
-}
-
-/**
- * Subscribe to acceptedLicense settings change, triggering sync with problems window
- */
-export async function listenForAcceptedLicenseChange(context: ExtensionContext) {
-  context.subscriptions.push(
-    workspace.onDidChangeConfiguration(async (event: ConfigurationChangeEvent) => {
-      await yieldToNextMacroTask();
-      if (!event.affectsConfiguration('metaed.acceptedLicense')) return;
-
-      await syncAcceptedLicenseDiagnostic();
-      await yieldToNextMacroTask();
     }),
   );
 }
@@ -344,9 +286,7 @@ export async function activate(context: ExtensionContext) {
     await sendLintCommandToServer();
   }
 
-  await listenForAcceptedLicenseChange(context);
   await listenForWorkspaceFolderChange(context);
-  await syncAcceptedLicenseDiagnostic();
   await yieldToNextMacroTask();
 
   await ensureBundledDsReadOnly();
