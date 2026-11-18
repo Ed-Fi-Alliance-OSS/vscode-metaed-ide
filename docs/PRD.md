@@ -1,8 +1,8 @@
 # Product Requirements Document: MetaEd IDE
 
 - Owner: Stephen Fuqua
-- Version: 4.8
-- Status: completed
+- Version: 4.10
+- Status: proposed
 - Repository: Ed-Fi-Alliance-OSS/vscode-metaed-ide
 - Platform and runtime: Visual Studio Code extension
 
@@ -41,9 +41,6 @@ implementations.
 - Distribute official Data Standard model projects bundled with the extension
   (`@edfi/ed-fi-model-*` packages) so users are not required to separately
   locate or clone them.
-- Require acceptance of the Ed-Fi Unifying Data Model license before any
-  build/deploy action can run, since the Data Standard content is licensed
-  separately from the extension's Apache 2.0 code.
 
 ## 1.2 Target users and personas
 
@@ -56,10 +53,9 @@ implementations.
   quickly, a build command to generate artifacts, and a deploy command to push
   generated artifacts into a local Ed-Fi ODS/API source checkout for local
   testing.
-- **Both personas** need clear, actionable error messages when: the license is
-  not accepted, no Data Standard project is present, the wrong Data Standard
-  version is present for the selected ODS/API target, or the ODS/API deployment
-  directory is misconfigured.
+- **Both personas** need clear, actionable error messages when: no Data Standard
+  project is present, the wrong Data Standard version is present for the
+  selected ODS/API target, or the ODS/API deployment directory is misconfigured.
 
 ## 1.3 Jobs to be done
 
@@ -128,7 +124,7 @@ implementations.
 
 - **FR-LINT-1**: The extension SHALL run MetaEd validation (via
   `@edfi/metaed-core` `executePipeline` with validators and enhancers enabled,
-  generators disabled) whenever the accepted license setting is true.
+  generators disabled).
 - **FR-LINT-2**: The extension SHALL trigger a debounced (500ms) lint
   automatically on: active editor change to a `.metaed` file, text changes to an
   open `.metaed` document, and closing of a `.metaed` document.
@@ -140,17 +136,13 @@ implementations.
   discoverable manual trigger is not needed; the command remains reachable via
   a user-defined keybinding or programmatically.
 - **FR-LINT-4**: The extension SHALL run an initial lint on activation if a
-  `.metaed` file is already the active editor, and again whenever the
-  license-acceptance setting changes to accepted.
+  `.metaed` file is already the active editor.
 - **FR-LINT-5**: The extension SHALL translate MetaEd validation failures into
   VS Code diagnostics (errors or warnings, based on failure category) attached
   to the specific file and line/column when file/source mapping is available, or
   to a virtual "Validation Errors" location when not.
 - **FR-LINT-6**: The extension SHALL clear diagnostics for files whose failures
   have been resolved since the previous lint pass.
-- **FR-LINT-7**: If the Ed-Fi license has not been accepted, the extension SHALL
-  display a persistent diagnostic instructing the user to accept the license
-  under Settings, and SHALL suppress automatic linting until acceptance.
 
 ### Build (FR-BUILD)
 
@@ -158,8 +150,6 @@ implementations.
   from the editor title-bar (for `.metaed` files) and the command palette, that
   runs the full MetaEd pipeline (validators, enhancers, and generators) via
   `@edfi/metaed-core` with `defaultPlugins()`.
-- **FR-BUILD-2**: Build SHALL be blocked with an error notification if the Ed-Fi
-  license has not been accepted.
 - **FR-BUILD-3**: Build SHALL be blocked with an error notification if no valid
   MetaEd project(s) can be resolved from the current workspace (see FR-PROJ
   requirements).
@@ -173,10 +163,10 @@ implementations.
   available from the editor title-bar (for `.metaed` files) and the command
   palette, that runs a build followed by `runDeployTasks` from
   `@edfi/metaed-odsapi-deploy`.
-- **FR-DEPLOY-2**: Deploy SHALL be blocked with an error notification if the
-  Ed-Fi license has not been accepted, if `metaed.odsApiDeploymentDirectory` is
-  unset or not a valid directory, or if that directory does not contain both an
-  `Ed-Fi-ODS` and an `Ed-Fi-ODS-Implementation` subfolder.
+- **FR-DEPLOY-2**: Deploy SHALL be blocked with an error notification if
+  `metaed.odsApiDeploymentDirectory` is unset or not a valid directory, or if
+  that directory does not contain both an `Ed-Fi-ODS` and an
+  `Ed-Fi-ODS-Implementation` subfolder.
 - **FR-DEPLOY-3**: On Windows, if the deployment directory path is a bare drive
   letter (e.g. `C:`) without a trailing path separator, deploy SHALL be blocked
   with a corrective error message.
@@ -237,12 +227,9 @@ implementations.
 - **FR-CFG-1**: The extension SHALL expose the following user/workspace settings
   under the `metaed.*` namespace: `targetOdsApiVersion` (enum of supported
   ODS/API versions, default `7.3`), `odsApiDeploymentDirectory` (string path),
-  `acceptedLicense` (boolean, default false), `suppressDeleteOnDeploy` (boolean,
-  default false), `allianceMode` (boolean, default false),
-  `additionalMssqlScriptsDirectory` (string path), and
+  `suppressDeleteOnDeploy` (boolean, default false), `allianceMode` (boolean,
+  default false), `additionalMssqlScriptsDirectory` (string path), and
   `additionalPostgresScriptsDirectory` (string path).
-- **FR-CFG-2**: Changing `metaed.acceptedLicense` SHALL immediately re-evaluate
-  the license diagnostic and, when newly accepted, trigger an initial lint pass.
 
 ### Diagnostics / support (FR-DIAG)
 
@@ -261,9 +248,6 @@ implementations.
   dependency versions SHALL move in lockstep (same version string) with what
   MetaEd-js publishes; `@edfi/ed-fi-model-*` package versions are independent
   and are not bumped as part of a MetaEd-js sync (per `CLAUDE.md`).
-- **NFR-SEC-1**: Ed-Fi Unifying Data Model usage SHALL require explicit license
-  acceptance (`metaed.acceptedLicense`) before any lint, build, or deploy action
-  executes.
 - **NFR-SEC-2**: Bundled core Data Standard files SHALL be protected from
   accidental modification via read-only file permissions, except when the user
   explicitly enables Alliance mode.
@@ -294,10 +278,10 @@ implementations.
   bundled/minified, because MetaEd plugin packages are loaded dynamically at
   runtime and static bundling/tree-shaking would break that dynamic loading;
   this results in a large (~13 MB) VSIX (per `docs/DEVELOPMENT.md`).
-- **NFR-USABILITY-1**: All blocking conditions across lint/build/deploy (license
-  not accepted, missing or invalid project(s), DS/ODS-API mismatch,
-  missing/invalid deploy directory) SHALL surface a specific, actionable error
-  notification rather than a silent failure or generic error.
+- **NFR-USABILITY-1**: All blocking conditions across lint/build/deploy (missing
+  or invalid project(s), DS/ODS-API mismatch, missing/invalid deploy directory)
+  SHALL surface a specific, actionable error notification rather than a silent
+  failure or generic error.
 
 ## 5. System architecture
 
@@ -355,7 +339,7 @@ and require product/engineering sign-off before being treated as requirements.
   code, or reinstate the setting (with a `package.json` declaration and
   documentation) if a telemetry feature is still planned.
 - PR-3 (MAY): Add lightweight automated smoke tests (e.g., headless VS Code
-  extension tests) for the client-side gating logic (license/project/version
+  extension tests) for the client-side gating logic (project/version
   checks in `ServerMessageFactory.ts` and the `metaed.build`/`metaed.deploy`
   command handlers), since this logic is unique to the extension and not covered
   by MetaEd-js's own test suite, while still avoiding duplicating MetaEd-js's
