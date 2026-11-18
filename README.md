@@ -62,8 +62,6 @@ settings:
   then make sure to include path separating character at the end(C:\, D:\). 
 * **Suppress Delete on Deploy**: Stop deployment from deleting the
   SupportingArtifacts API folder. For advanced users only.
-* **Accepted License**: Usage of the MetaEd IDE requires acceptance of the
-  Ed-Fi License agreement. Check the box to accept the license terms.
 * **Alliance Mode**: For Alliance users only, this makes core files editable.
   Non-Alliance users must leave this setting disabled to avoid dangerous and
   costly mistakes.
@@ -73,6 +71,15 @@ settings:
 Please report support issues through the [Ed-Fi Community Hub](https://community.ed-fi.org).
 
 ## Release Notes
+
+### 4.10.0
+
+* Removes the Accepted License setting. Linting, building, and deploying no
+  longer require accepting the Ed-Fi License Agreement. No action is needed: if
+  your settings still contain `"metaed.acceptedLicense"`, VS Code ignores it.
+  To tidy up, run **Preferences: Open User Settings (JSON)** (and **Preferences:
+  Open Workspace Settings (JSON)** if you set it per workspace) and delete that
+  line.
 
 ### 4.9.1
 

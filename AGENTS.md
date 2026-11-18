@@ -32,7 +32,7 @@ LSP client/server pair, both compiled from `src/` to `dist/`:
 - **`src/client/LanguageClient.ts`** — extension entry point (`main` in package.json). Starts the
   language server over IPC, registers the `metaed.build` / `metaed.deploy` / `metaed.lint`
   commands, debounces lint on .metaed document events, and surfaces server results as VS Code
-  notifications. All user-facing validation (license accepted, deploy directory exists and
+  notifications. All user-facing validation (deploy directory exists and
   contains `Ed-Fi-ODS` + `Ed-Fi-ODS-Implementation`) happens client-side before messaging the
   server.
 - **`src/server/LanguageServer.ts`** — the LSP server process. Handles custom notifications
