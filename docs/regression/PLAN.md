@@ -221,9 +221,9 @@ Additional workspaces: no folders; Sample only; DS only; two DS folders; valid D
 without `package.json`; malformed metadata variants; N1; and a workspace pointing into the
 **disposable extension installation's bundled model** for V10. Set workspace-level
 `metaed.targetOdsApiVersion`, `metaed.odsApiDeploymentDirectory`, `metaed.allianceMode: false`,
-and `metaed.suppressDeleteOnDeploy: false`. Record license acceptance explicitly; V03 needs
-the setting false before it is accepted. Put DS first and Sample last, so IDE output goes under
-Sample's `MetaEdOutput` directory.
+and `metaed.suppressDeleteOnDeploy: false`. For V03, also prepare a profile with a leftover
+`"metaed.acceptedLicense": false` in user settings; it must be ignored. Put DS first and Sample
+last, so IDE output goes under Sample's `MetaEdOutput` directory.
 
 Create a separate deployment skeleton per pair:
 
@@ -305,7 +305,7 @@ Run routine cases V01–V11. V12–V14 are conditional and must be explicitly re
 | --- | --- | --- |
 | V01 | Activation, language mode/highlighting, editor actions, command palette | P3 |
 | V02 | Empty workspace, missing DS, multiple DS, malformed project metadata | P3 setup variants |
-| V03 | License gating and settings changes | P3 |
+| V03 | No license gate (fresh profile and leftover setting) | P3 |
 | V04 | Valid target switching and incompatible pairing rejection | P1 → P4 → P1, P3, N1 |
 | V05 | Empty, missing, and incorrectly structured deployment directory | P3 |
 | V06 | Successful build and visible fresh output | P1–P4 |

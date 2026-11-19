@@ -2,18 +2,18 @@
 	"name": "vscode-metaed-ide",
 	"displayName": "MetaEd IDE",
 	"description": "Ed-Fi MetaEd IDE for Visual Studio Code",
-	"license": "SEE LICENSE IN LICENSE.md",
+	"license": "Apache-2.0",
 	"version": "4.9.1",
 	"publishConfig": {
 		"registry": "https://pkgs.dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_packaging/EdFi/npm/registry/"
 	},
-	"publisher": "Ed-FiAlliance",
+	"publisher": "Ed-Fi Alliance",
 	"icon": "static/ed-fi-128x128.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide"
 	},
-	"homepage": "https://techdocs.ed-fi.org/display/EDFITOOLS/MetaEd+IDE",
+	"homepage": "https://docs.ed-fi.org/reference/metaed",
 	"engines": {
 		"vscode": "^1.76.0"
 	},
@@ -21,7 +21,7 @@
 		"Other"
 	],
 	"bugs": {
-		"url": "https://tracker.ed-fi.org"
+		"url": "https://community.ed-fi.org"
 	},
 	"keywords": [
 		"metaed",
@@ -110,32 +110,26 @@
 					"type": "string",
 					"default": ""
 				},
-				"metaed.acceptedLicense": {
-					"order": 3,
-					"markdownDescription": "Usage of the Ed-Fi Unifying Data Model requires acceptance of the [Ed-Fi License agreement](https://docs.ed-fi.org/reference/metaed/getting-started-with-metaed-ide/installation/ed-fi-license-agreement/). Check the box to accept the license terms.",
-					"type": "boolean",
-					"default": false
-				},
 				"metaed.suppressDeleteOnDeploy": {
-					"order": 4,
+					"order": 3,
 					"description": "Stop deployment from deleting the SupportingArtifacts API folder.  For advanced users only.",
 					"type": "boolean",
 					"default": false
 				},
 				"metaed.allianceMode": {
-					"order": 5,
+					"order": 4,
 					"description": "For Alliance users only, this makes core files editable. Non-Alliance users must leave this setting disabled to avoid dangerous and costly mistakes.",
 					"type": "boolean",
 					"default": false
 				},
 				"metaed.additionalMssqlScriptsDirectory": {
-					"order": 6,
+					"order": 5,
 					"description": "Full path to optional folder for post deploy MSSQL database scripts. The contents of this folder will be copied to /MsSql/Data/Ods. For advanced users only.",
 					"type": "string",
 					"default": ""
 				},
 				"metaed.additionalPostgresScriptsDirectory": {
-					"order": 7,
+					"order": 6,
 					"description": "Full path to optional folder for post deploy PostgreSql database scripts. The contents of this folder will be copied to /PgSql/Data/Ods. For advanced users only.",
 					"type": "string",
 					"default": ""

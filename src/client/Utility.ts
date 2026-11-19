@@ -7,8 +7,6 @@ import path from 'node:path';
 // eslint-disable-next-line import/no-unresolved
 import { window } from 'vscode';
 
-export const LICENSE_URL = ' https://www.ed-fi.org/getting-started/license-ed-fi-technology/';
-
 /**
  * Awaiting on this function in a microtask ends the microtask queue and allows the next macro task to run.
  * See https://medium.com/@mmoshikoo/event-loop-in-nodejs-visualized-235867255e81 for a visual
